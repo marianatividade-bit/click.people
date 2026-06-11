@@ -52,6 +52,7 @@
   <div class="sidebar-footer">
     <span class="person-name"><%= current_person.name %></span>
     <%= button_to "Sair", destroy_person_session_path, method: :delete,
+          data: { turbo: false },
           style: "background:none; border:none; padding:0; color:var(--color-text-secondary); font-size:13px; cursor:pointer; font-family:var(--font-sans);" %>
   </div>
 </aside>

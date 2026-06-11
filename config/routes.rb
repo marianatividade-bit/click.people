@@ -4,8 +4,9 @@ Rails.application.routes.draw do
              skip: [:registrations, :passwords, :confirmations, :unlocks, :sessions]
 
   devise_scope :person do
-    get  "/login",  to: "people/sessions#new",     as: :new_person_session
+    get    "/login",  to: "people/sessions#new",     as: :new_person_session
     delete "/logout", to: "people/sessions#destroy", as: :destroy_person_session
+    get    "/logout", to: redirect("/login")
   end
 
   resources :cycles, only: [:index, :new, :create, :show] do
