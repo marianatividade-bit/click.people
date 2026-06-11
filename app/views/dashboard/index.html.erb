@@ -1,0 +1,31 @@
+<% content_for :title, "Home — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "home" %>
+
+  <main class="app-content">
+    <h1 class="page-title">Olá, <%= current_person.name.split(" ").first %> 👋</h1>
+    <p class="page-subtitle">Bem-vinda ao Click.People — sua plataforma de gestão de desempenho.</p>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-label">Ciclo ativo</div>
+        <div class="stat-value">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avaliações pendentes</div>
+        <div class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pessoas no meu time</div>
+        <div class="stat-value">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p style="margin: 0; color: var(--color-text-secondary); font-size: 15px;">
+        Nenhum ciclo de avaliação ativo no momento. Quando um ciclo for aberto, você verá suas tarefas aqui.
+      </p>
+    </div>
+  </main>
+</div>

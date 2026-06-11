@@ -1,0 +1,41 @@
+<% content_for :title, "#{@cycle.name} — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "cycles" %>
+
+  <main class="app-content">
+    <%= link_to "← Ciclos", cycles_path, style: "font-size:14px; color:var(--color-text-secondary); text-decoration:none; display:inline-block; margin-bottom:24px;" %>
+
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:4px;">
+      <h1 class="page-title" style="margin-bottom:0"><%= @cycle.name %></h1>
+      <span class="cycle-badge cycle-badge--<%= @cycle.status %>"><%= t_status(@cycle.status) %></span>
+    </div>
+    <p class="page-subtitle">
+      <% if @cycle.evaluation_deadline %>
+        Prazo: <%= @cycle.evaluation_deadline.strftime("%d/%m/%Y") %>
+      <% else %>
+        Sem prazo definido
+      <% end %>
+    </p>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-label">Status</div>
+        <div class="stat-value" style="font-size:18px;"><%= t_status(@cycle.status) %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Criado em</div>
+        <div class="stat-value" style="font-size:18px;"><%= @cycle.created_at.strftime("%d/%m/%Y") %></div>
+      </div>
+    </div>
+
+    <% if @cycle.draft? %>
+      <div style="margin-top:8px;">
+        <%= button_to "Abrir ciclo para avaliações", cycle_path(@cycle), method: :patch,
+              params: { cycle: { action: "open" } },
+              class: "btn btn-primary",
+              data: { confirm: "Confirma abertura do ciclo?" } %>
+      </div>
+    <% end %>
+  </main>
+</div>

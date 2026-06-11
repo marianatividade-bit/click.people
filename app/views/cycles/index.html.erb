@@ -1,0 +1,40 @@
+<% content_for :title, "Ciclos — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "cycles" %>
+
+  <main class="app-content">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 4px;">
+      <h1 class="page-title" style="margin-bottom:0">Ciclos</h1>
+      <%= link_to new_cycle_path, class: "btn btn-primary" do %>
+        + Novo ciclo
+      <% end %>
+    </div>
+    <p class="page-subtitle">Gerencie os ciclos de avaliação de desempenho.</p>
+
+    <% if @cycles.empty? %>
+      <div class="card" style="text-align:center; padding: 48px 24px;">
+        <p style="font-size:15px; color:var(--color-text-secondary); margin:0 0 20px">Nenhum ciclo criado ainda.</p>
+        <%= link_to "+ Criar primeiro ciclo", new_cycle_path, class: "btn btn-primary" %>
+      </div>
+    <% else %>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <% @cycles.each do |cycle| %>
+          <%= link_to cycle_path(cycle), style: "text-decoration:none;" do %>
+            <div class="card cycle-row">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="flex:1;">
+                  <div style="font-size:16px; font-weight:600; color:var(--color-text); margin-bottom:2px;"><%= cycle.name %></div>
+                  <% if cycle.evaluation_deadline %>
+                    <div style="font-size:13px; color:var(--color-text-secondary);">Prazo: <%= cycle.evaluation_deadline.strftime("%d/%m/%Y") %></div>
+                  <% end %>
+                </div>
+                <span class="cycle-badge cycle-badge--<%= cycle.status %>"><%= t_status(cycle.status) %></span>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </main>
+</div>

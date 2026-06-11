@@ -1,5 +1,5 @@
 class Cycle < ApplicationRecord
-  enum status: { draft: 0, open: 1, evaluation: 2, calibration: 3, closed: 4 }
+  enum :status, { draft: 0, open: 1, evaluation: 2, calibration: 3, closed: 4 }
 
   has_many :cycle_snapshots
   has_many :evaluations

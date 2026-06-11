@@ -2,8 +2,8 @@ class Person < ApplicationRecord
   devise :trackable, :rememberable, :omniauthable,
          omniauth_providers: [:google_oauth2]
 
-  enum role: { employee: 0, manager: 1, director: 2, hr_admin: 3, business_partner: 4 }
-  enum status: { active: 0, inactive: 1 }
+  enum :role,   { employee: 0, manager: 1, director: 2, hr_admin: 3, business_partner: 4 }
+  enum :status, { active: 0, inactive: 1 }
 
   def self.from_omniauth(auth)
     find_or_initialize_by(provider: auth.provider, uid: auth.uid).tap do |person|

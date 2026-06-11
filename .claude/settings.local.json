@@ -7,7 +7,11 @@
       "Bash(rails --version)",
       "PowerShell(ruby --version)",
       "PowerShell(rails --version)",
-      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"User\"\\); ruby --version)"
+      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"PATH\",\"User\"\\); ruby --version)",
+      "Bash(bundle exec *)",
+      "PowerShell($env:PATH = \"C:\\\\Ruby33-x64\\\\bin;\" + $env:PATH; Set-Location \"C:\\\\Users\\\\maria.natividade\\\\click.people\"; $output = bundle exec rails db:migrate 2>&1; Write-Output $output)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }
