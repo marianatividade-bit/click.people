@@ -1,0 +1,63 @@
+<% content_for :title, "#{@pdi.title} — PDI" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "pdis" %>
+
+  <main class="app-content">
+    <%= link_to "← PDIs", pdis_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+      <h1 class="page-title" style="margin-bottom:0;"><%= @pdi.title %></h1>
+      <span class="pdi-badge pdi-badge--<%= @pdi.status %>">
+        <%= { "not_started" => "Não iniciado", "in_progress" => "Em andamento", "done" => "Concluído", "cancelled" => "Cancelado" }[@pdi.status] || @pdi.status %>
+      </span>
+    </div>
+    <p class="page-subtitle"><%= @pdi.person.name %><%= @pdi.cycle ? " · #{@pdi.cycle.name}" : "" %></p>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px;">
+      <div class="card">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:8px;">Descrição</div>
+        <p style="margin:0;font-size:14px;line-height:1.6;"><%= @pdi.description.presence || "Sem descrição." %></p>
+      </div>
+      <div class="card">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:12px;">Progresso</div>
+        <div style="font-size:32px;font-weight:700;margin-bottom:8px;"><%= @pdi.progress_percent %>%</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:<%= @pdi.progress_percent %>%;"></div>
+        </div>
+        <% if @pdi.due_date %>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:12px;">
+            Deadline: <%= @pdi.due_date.strftime("%d/%m/%Y") %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">Ações</div>
+        <span style="font-size:12px;color:var(--color-text-secondary);"><%= @pdi.actions.count { |a| a["done"] } %>/<%= @pdi.actions.count %></span>
+      </div>
+      <% if @pdi.actions.any? %>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <% @pdi.actions.each do |action| %>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--color-surface-alt);border-radius:var(--radius-input);">
+              <div style="width:18px;height:18px;border-radius:4px;border:2px solid <%= action['done'] ? 'var(--color-success)' : 'var(--color-border)' %>;background:<%= action['done'] ? 'var(--color-success)' : 'transparent' %>;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <% if action["done"] %>
+                  <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <% end %>
+              </div>
+              <span style="font-size:14px;<%= action['done'] ? 'text-decoration:line-through;color:var(--color-text-secondary)' : '' %>"><%= action["title"] %></span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p style="color:var(--color-text-secondary);font-size:14px;margin:0;">Nenhuma ação cadastrada.</p>
+      <% end %>
+    </div>
+
+    <% if @pdi.person == current_person || current_person.hr_admin? || current_person.business_partner? %>
+      <%= link_to "Editar PDI", edit_pdi_path(@pdi), class: "btn btn-secondary" %>
+    <% end %>
+  </main>
+</div>

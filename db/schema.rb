@@ -10,7 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_000006) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_000010) do
+  create_table "cycle_results", force: :cascade do |t|
+    t.datetime "calibrated_at"
+    t.integer "calibrated_by_id"
+    t.text "calibration_notes"
+    t.datetime "created_at", null: false
+    t.integer "cycle_id", null: false
+    t.integer "nine_box_position"
+    t.float "performance_score"
+    t.integer "person_id", null: false
+    t.float "potential_score"
+    t.datetime "updated_at", null: false
+    t.index ["cycle_id", "person_id"], name: "index_cycle_results_on_cycle_id_and_person_id", unique: true
+    t.index ["cycle_id"], name: "index_cycle_results_on_cycle_id"
+    t.index ["person_id"], name: "index_cycle_results_on_person_id"
+  end
+
   create_table "cycle_snapshots", force: :cascade do |t|
     t.integer "chapter_manager_id"
     t.datetime "created_at", null: false
@@ -56,6 +72,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_000006) do
     t.index ["status"], name: "index_evaluations_on_status"
   end
 
+  create_table "feedbacks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "cycle_id"
+    t.integer "giver_id", null: false
+    t.text "message", null: false
+    t.integer "receiver_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "visibility", default: 0, null: false
+    t.index ["cycle_id"], name: "index_feedbacks_on_cycle_id"
+    t.index ["giver_id"], name: "index_feedbacks_on_giver_id"
+    t.index ["receiver_id"], name: "index_feedbacks_on_receiver_id"
+    t.index ["visibility"], name: "index_feedbacks_on_visibility"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "link"
+    t.integer "person_id", null: false
+    t.datetime "read_at"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_id", "read_at"], name: "index_notifications_on_person_id_and_read_at"
+    t.index ["person_id"], name: "index_notifications_on_person_id"
+  end
+
+  create_table "pdis", force: :cascade do |t|
+    t.json "actions", default: [], null: false
+    t.datetime "created_at", null: false
+    t.integer "cycle_id"
+    t.text "description"
+    t.date "due_date"
+    t.integer "person_id", null: false
+    t.integer "status", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cycle_id"], name: "index_pdis_on_cycle_id"
+    t.index ["person_id"], name: "index_pdis_on_person_id"
+    t.index ["status"], name: "index_pdis_on_status"
+  end
+
   create_table "people", force: :cascade do |t|
     t.integer "chapter_manager_id"
     t.datetime "created_at", null: false
@@ -95,6 +152,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_000006) do
     t.index ["viewer_id"], name: "index_permission_caches_on_viewer_id"
   end
 
+  add_foreign_key "cycle_results", "cycles"
+  add_foreign_key "cycle_results", "people"
   add_foreign_key "cycle_snapshots", "cycles"
   add_foreign_key "cycle_snapshots", "people"
   add_foreign_key "cycle_snapshots", "people", column: "chapter_manager_id"
@@ -102,6 +161,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_000006) do
   add_foreign_key "evaluations", "cycles"
   add_foreign_key "evaluations", "people", column: "evaluated_id"
   add_foreign_key "evaluations", "people", column: "evaluator_id"
+  add_foreign_key "feedbacks", "cycles"
+  add_foreign_key "feedbacks", "people", column: "giver_id"
+  add_foreign_key "feedbacks", "people", column: "receiver_id"
+  add_foreign_key "notifications", "people"
+  add_foreign_key "pdis", "cycles"
+  add_foreign_key "pdis", "people"
   add_foreign_key "people", "people", column: "chapter_manager_id"
   add_foreign_key "people", "people", column: "stream_manager_id"
   add_foreign_key "permission_caches", "people", column: "target_id"

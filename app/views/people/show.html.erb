@@ -4,7 +4,12 @@
   <%= render "shared/sidebar", active: "people" %>
 
   <main class="app-content">
-    <%= link_to "← Pessoas", people_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <%= link_to "← Pessoas", people_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;" %>
+      <% if current_person.hr_admin? || current_person.business_partner? %>
+        <%= link_to "Editar", edit_person_path(@person), class: "btn btn-secondary", style: "font-size:13px;padding:6px 16px;" %>
+      <% end %>
+    </div>
 
     <%# Header do perfil %>
     <div style="display:flex;align-items:center;gap:20px;margin-bottom:32px;">

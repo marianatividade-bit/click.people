@@ -1,0 +1,43 @@
+<% content_for :title, "Novo Feedback — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "feedbacks" %>
+
+  <main class="app-content">
+    <%= link_to "← Feedbacks", feedbacks_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <h1 class="page-title">Dar Feedback</h1>
+
+    <%= form_with model: @feedback, local: true do |f| %>
+      <div class="card" style="max-width:600px;margin-bottom:16px;">
+        <div class="form-field">
+          <%= f.label :receiver_id, "Para", class: "form-label" %>
+          <%= f.select :receiver_id, @people.map{|p| [p.name, p.id]}, { include_blank: "Selecione uma pessoa..." }, class: "form-input" %>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-field" style="margin-bottom:0;">
+            <%= f.label :visibility, "Visibilidade", class: "form-label" %>
+            <%= f.select :visibility, [["Público","public_feedback"],["Privado","private_feedback"]], { selected: "public_feedback" }, class: "form-input" %>
+          </div>
+          <div class="form-field" style="margin-bottom:0;">
+            <%= f.label :cycle_id, "Ciclo (opcional)", class: "form-label" %>
+            <%= f.select :cycle_id, @cycles.map{|c| [c.name, c.id]}, { include_blank: "Sem vínculo" }, class: "form-input" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:600px;margin-bottom:16px;">
+        <div class="form-field" style="margin-bottom:0;">
+          <%= f.label :message, "Mensagem", class: "form-label" %>
+          <%= f.text_area :message, rows: 6, class: "form-input", placeholder: "Escreva seu feedback de forma clara e construtiva..." %>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">Mínimo 10 caracteres.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;">
+        <%= f.submit "Enviar feedback", class: "btn btn-primary" %>
+        <%= link_to "Cancelar", feedbacks_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </main>
+</div>

@@ -1,0 +1,25 @@
+<% content_for :title, "Feedback — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "feedbacks" %>
+
+  <main class="app-content">
+    <%= link_to "← Feedbacks", feedbacks_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+      <h1 class="page-title" style="margin-bottom:0;">Feedback</h1>
+      <span class="cycle-badge" style="background:<%= @feedback.public_feedback? ? 'rgba(46,125,50,0.1)' : 'rgba(107,107,107,0.1)' %>;color:<%= @feedback.public_feedback? ? 'var(--color-success)' : 'var(--color-text-secondary)' %>;">
+        <%= @feedback.public_feedback? ? "Público" : "Privado" %>
+      </span>
+    </div>
+    <p class="page-subtitle">
+      De <strong><%= @feedback.giver.name %></strong> para <strong><%= @feedback.receiver.name %></strong>
+      <%= @feedback.cycle ? " · #{@feedback.cycle.name}" : "" %>
+      · <%= @feedback.created_at.strftime("%d/%m/%Y") %>
+    </p>
+
+    <div class="card" style="max-width:640px;">
+      <p style="font-size:15px;line-height:1.7;margin:0;white-space:pre-wrap;"><%= @feedback.message %></p>
+    </div>
+  </main>
+</div>

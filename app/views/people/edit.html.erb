@@ -1,0 +1,55 @@
+<% content_for :title, "Editar #{@person.name} — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "people" %>
+
+  <main class="app-content">
+    <%= link_to "← #{@person.name}", person_path(@person), style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;">
+      <div style="width:48px;height:48px;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex-shrink:0;">
+        <%= @person.name.split(" ").first(2).map{|n|n[0]}.join %>
+      </div>
+      <div>
+        <h1 class="page-title" style="margin-bottom:2px;"><%= @person.name %></h1>
+        <div style="font-size:13px;color:var(--color-text-secondary);"><%= @person.email %></div>
+      </div>
+    </div>
+
+    <%= form_with model: @person, local: true do |f| %>
+      <div class="card" style="max-width:560px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:16px;">Papel e status</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-field" style="margin-bottom:0;">
+            <%= f.label :role, "Papel", class: "form-label" %>
+            <%= f.select :role, [["Colaborador","employee"],["Manager","manager"],["Director","director"],["RH Admin","hr_admin"],["Business Partner","business_partner"]], {}, class: "form-input" %>
+          </div>
+          <div class="form-field" style="margin-bottom:0;">
+            <%= f.label :status, "Status", class: "form-label" %>
+            <%= f.select :status, [["Ativo","active"],["Inativo","inactive"]], {}, class: "form-input" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:560px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:16px;">Liderança</div>
+        <% managers = Person.order(:name) %>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-field" style="margin-bottom:0;">
+            <%= f.label :chapter_manager_id, "Chapter Manager", class: "form-label" %>
+            <%= f.select :chapter_manager_id, managers.map{|m| [m.name, m.id]}, { include_blank: "Sem chapter manager" }, class: "form-input" %>
+          </div>
+          <div class="form-field" style="margin-bottom:0;">
+            <%= f.label :stream_manager_id, "Stream Manager", class: "form-label" %>
+            <%= f.select :stream_manager_id, managers.map{|m| [m.name, m.id]}, { include_blank: "Sem stream manager" }, class: "form-input" %>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;">
+        <%= f.submit "Salvar", class: "btn btn-primary" %>
+        <%= link_to "Cancelar", person_path(@person), class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </main>
+</div>

@@ -1,0 +1,77 @@
+<% content_for :title, "Feedbacks — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "feedbacks" %>
+
+  <main class="app-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <h1 class="page-title" style="margin-bottom:4px;">Feedbacks</h1>
+        <p class="page-subtitle" style="margin:0;">Contínuos e por ciclo</p>
+      </div>
+      <%= link_to "Dar feedback", new_feedback_path, class: "btn btn-primary" %>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <h2 style="font-size:15px;font-weight:700;margin:0 0 12px;">Recebidos (<%= @received.count %>)</h2>
+        <% if @received.any? %>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <% @received.each do |fb| %>
+              <%= link_to feedback_path(fb), style: "text-decoration:none;" do %>
+                <div class="card" style="padding:14px 16px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div style="width:28px;height:28px;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">
+                        <%= fb.giver.name.split(" ").first(2).map{|n|n[0]}.join %>
+                      </div>
+                      <span style="font-size:14px;font-weight:600;color:var(--color-text);"><%= fb.giver.name %></span>
+                    </div>
+                    <span style="font-size:11px;color:var(--color-text-secondary);"><%= fb.created_at.strftime("%d/%m/%Y") %></span>
+                  </div>
+                  <p style="margin:0;font-size:13px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    <%= fb.message.truncate(80) %>
+                  </p>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="card" style="text-align:center;padding:32px;color:var(--color-text-secondary);font-size:14px;">
+            Nenhum feedback recebido ainda.
+          </div>
+        <% end %>
+      </div>
+
+      <div>
+        <h2 style="font-size:15px;font-weight:700;margin:0 0 12px;">Enviados (<%= @given.count %>)</h2>
+        <% if @given.any? %>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <% @given.each do |fb| %>
+              <%= link_to feedback_path(fb), style: "text-decoration:none;" do %>
+                <div class="card" style="padding:14px 16px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div style="width:28px;height:28px;border-radius:50%;background:var(--color-surface-alt);border:1px solid var(--color-border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--color-text-secondary);flex-shrink:0;">
+                        <%= fb.receiver.name.split(" ").first(2).map{|n|n[0]}.join %>
+                      </div>
+                      <span style="font-size:14px;font-weight:600;color:var(--color-text);"><%= fb.receiver.name %></span>
+                    </div>
+                    <span style="font-size:11px;color:var(--color-text-secondary);"><%= fb.created_at.strftime("%d/%m/%Y") %></span>
+                  </div>
+                  <p style="margin:0;font-size:13px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    <%= fb.message.truncate(80) %>
+                  </p>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="card" style="text-align:center;padding:32px;color:var(--color-text-secondary);font-size:14px;">
+            Você ainda não deu nenhum feedback.
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </main>
+</div>

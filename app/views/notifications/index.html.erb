@@ -1,0 +1,47 @@
+<% content_for :title, "Notificações — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "notifications" %>
+
+  <main class="app-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <h1 class="page-title" style="margin-bottom:4px;">Notificações</h1>
+        <p class="page-subtitle" style="margin:0;"><%= @notifications.count { |n| !n.read? } %> não lidas</p>
+      </div>
+      <% if @notifications.any?(&:unread?) rescue @notifications.any? { |n| !n.read? } %>
+        <%= button_to "Marcar todas como lidas", mark_all_read_notifications_path, method: :patch, class: "btn btn-secondary", style: "cursor:pointer;" %>
+      <% end %>
+    </div>
+
+    <% if @notifications.any? %>
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:640px;">
+        <% @notifications.each do |notif| %>
+          <div class="card" style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;<%= notif.read? ? '' : 'border-left:3px solid var(--color-accent);' %>">
+            <div style="width:8px;height:8px;border-radius:50%;background:<%= notif.read? ? 'var(--color-border)' : 'var(--color-accent)' %>;margin-top:6px;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:<%= notif.read? ? '400' : '600' %>;margin-bottom:2px;"><%= notif.title %></div>
+              <% if notif.body.present? %>
+                <p style="font-size:13px;color:var(--color-text-secondary);margin:0 0 4px;"><%= notif.body %></p>
+              <% end %>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="font-size:11px;color:var(--color-text-secondary);"><%= notif.created_at.strftime("%d/%m/%Y %H:%M") %></span>
+                <% if notif.link.present? %>
+                  <%= link_to "Ver →", notif.link, style: "font-size:12px;color:var(--color-accent);text-decoration:none;font-weight:600;" %>
+                <% end %>
+                <% unless notif.read? %>
+                  <%= button_to "Lida", mark_read_notification_path(notif), method: :patch,
+                        style: "background:none;border:none;font-size:12px;color:var(--color-text-secondary);cursor:pointer;padding:0;font-family:var(--font-sans);" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="card" style="text-align:center;padding:48px;max-width:640px;">
+        <p style="color:var(--color-text-secondary);margin:0;font-size:14px;">Nenhuma notificação ainda.</p>
+      </div>
+    <% end %>
+  </main>
+</div>
