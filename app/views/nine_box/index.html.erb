@@ -1,0 +1,13 @@
+<% content_for :title, "9-Box — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "ninebox" %>
+  <main class="app-content">
+    <h1 class="page-title">9-Box</h1>
+    <p class="page-subtitle">Nenhum ciclo criado ainda.</p>
+    <div class="card" style="text-align:center; padding:48px 24px;">
+      <p style="font-size:15px; color:var(--color-text-secondary); margin:0 0 20px;">Crie um ciclo de avaliação para visualizar o 9-Box.</p>
+      <%= link_to "Criar ciclo", new_cycle_path, class: "btn btn-primary" %>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,82 @@
+<% content_for :title, "9-Box — #{@cycle.name}" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "ninebox" %>
+
+  <main class="app-content" style="padding-right: 32px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+      <div>
+        <h1 class="page-title" style="margin-bottom:0;">9-Box</h1>
+        <p class="page-subtitle"><%= @cycle.name %> · <span class="cycle-badge cycle-badge--<%= @cycle.status %>"><%= t_status(@cycle.status) %></span></p>
+      </div>
+      <%= link_to cycle_path(@cycle), style: "font-size:13px; color:var(--color-text-secondary); text-decoration:none;" do %>
+        ← Voltar ao ciclo
+      <% end %>
+    </div>
+
+    <div class="ninebox-wrapper">
+      <%# Eixo Y label %>
+      <div class="ninebox-ylabel">
+        <span><%= @axis_y %></span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:0; flex:1;">
+        <%# Linhas do grid — alto potencial primeiro (top) %>
+        <% rows = [
+          { label: "Alto",  row_idx: 2 },
+          { label: "Médio", row_idx: 1 },
+          { label: "Baixo", row_idx: 0 }
+        ] %>
+
+        <% rows.each do |row| %>
+          <div style="display:flex; align-items:stretch; gap:0;">
+            <%# Label da linha %>
+            <div class="ninebox-rowlabel"><%= row[:label] %></div>
+
+            <%# 3 células da linha %>
+            <% [0, 1, 2].each do |col_idx| %>
+              <% q_idx = row[:row_idx] * 3 + col_idx %>
+              <% people_here = @quadrants[q_idx] %>
+              <div class="ninebox-cell ninebox-cell--<%= q_idx %>">
+                <div class="ninebox-cell-name"><%= @names[q_idx] %></div>
+                <div class="ninebox-cell-people">
+                  <% if people_here.any? %>
+                    <% people_here.each do |person| %>
+                      <div class="ninebox-avatar" title="<%= person.name %>">
+                        <%= person.name.split(" ").first(2).map { |n| n[0] }.join %>
+                      </div>
+                    <% end %>
+                  <% else %>
+                    <div class="ninebox-empty">—</div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# Labels do eixo X %>
+        <div style="display:flex; margin-left: 48px;">
+          <% ["Baixo", "Médio", "Alto"].each do |lbl| %>
+            <div class="ninebox-collabel"><%= lbl %></div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# Eixo X label %>
+    <div style="text-align:center; margin-top:4px; padding-left:80px;">
+      <span style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--color-text-secondary);"><%= @axis_x %></span>
+    </div>
+
+    <%# Legenda de quadrantes %>
+    <div class="ninebox-legend">
+      <% @names.each_with_index do |name, i| %>
+        <div class="ninebox-legend-item">
+          <div class="ninebox-legend-dot ninebox-cell--<%= i %>"></div>
+          <span><%= name %></span>
+        </div>
+      <% end %>
+    </div>
+  </main>
+</div>
