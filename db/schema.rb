@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_000010) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_185145) do
   create_table "cycle_results", force: :cascade do |t|
     t.datetime "calibrated_at"
     t.integer "calibrated_by_id"
@@ -152,6 +152,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_000010) do
     t.index ["viewer_id"], name: "index_permission_caches_on_viewer_id"
   end
 
+  create_table "recovery_plans", force: :cascade do |t|
+    t.json "actions"
+    t.datetime "created_at", null: false
+    t.integer "created_by_id"
+    t.integer "cycle_id"
+    t.text "description"
+    t.date "due_date"
+    t.text "outcome"
+    t.integer "person_id", null: false
+    t.text "reason"
+    t.integer "status"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["cycle_id"], name: "index_recovery_plans_on_cycle_id"
+    t.index ["person_id"], name: "index_recovery_plans_on_person_id"
+  end
+
   add_foreign_key "cycle_results", "cycles"
   add_foreign_key "cycle_results", "people"
   add_foreign_key "cycle_snapshots", "cycles"
@@ -171,4 +188,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_000010) do
   add_foreign_key "people", "people", column: "stream_manager_id"
   add_foreign_key "permission_caches", "people", column: "target_id"
   add_foreign_key "permission_caches", "people", column: "viewer_id"
+  add_foreign_key "recovery_plans", "cycles"
+  add_foreign_key "recovery_plans", "people"
 end

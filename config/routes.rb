@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   resources :people, only: [:index, :show, :edit, :update]
   resources :evaluations, only: [:index, :new, :create, :show, :update]
   resources :pdis, only: [:index, :new, :create, :show, :edit, :update]
+  resources :recovery_plans, only: [:index, :new, :create, :show, :edit, :update]
   resources :feedbacks, only: [:index, :new, :create, :show]
   resources :notifications, only: [:index] do
     collection do

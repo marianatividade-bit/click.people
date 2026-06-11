@@ -1,0 +1,54 @@
+<% content_for :title, "Novo Plano de Recuperação — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "recovery_plans" %>
+
+  <main class="app-content">
+    <%= link_to "← Planos de Recuperação", recovery_plans_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <h1 class="page-title">Novo Plano de Recuperação</h1>
+
+    <%= form_with model: @plan, local: true do |f| %>
+      <div class="card" style="max-width:640px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:16px;">Sobre o plano</div>
+
+        <div class="form-field">
+          <%= f.label :person_id, "Colaborador", class: "form-label" %>
+          <%= f.select :person_id, @people.map{|p| [p.name, p.id]}, { include_blank: "Selecione..." }, class: "form-input" %>
+        </div>
+        <div class="form-field">
+          <%= f.label :title, "Título do plano", class: "form-label" %>
+          <%= f.text_field :title, class: "form-input", placeholder: "Ex: Plano de melhoria de desempenho Q2" %>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-field" style="margin-bottom:0;">
+            <%= f.label :due_date, "Prazo", class: "form-label" %>
+            <%= f.date_field :due_date, class: "form-input" %>
+          </div>
+          <div class="form-field" style="margin-bottom:0;">
+            <%= f.label :cycle_id, "Ciclo (opcional)", class: "form-label" %>
+            <%= f.select :cycle_id, @cycles.map{|c| [c.name, c.id]}, { include_blank: "Sem vínculo" }, class: "form-input" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:640px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:16px;">Contexto</div>
+
+        <div class="form-field">
+          <%= f.label :reason, "Motivo do plano", class: "form-label" %>
+          <%= f.text_area :reason, rows: 3, class: "form-input", placeholder: "Descreva o motivo que levou à criação deste plano..." %>
+        </div>
+        <div class="form-field" style="margin-bottom:0;">
+          <%= f.label :description, "Expectativas e objetivos", class: "form-label" %>
+          <%= f.text_area :description, rows: 4, class: "form-input", placeholder: "O que se espera do colaborador ao final do período..." %>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;">
+        <%= f.submit "Criar plano", class: "btn btn-primary" %>
+        <%= link_to "Cancelar", recovery_plans_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </main>
+</div>

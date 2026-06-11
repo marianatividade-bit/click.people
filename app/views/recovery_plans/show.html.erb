@@ -1,0 +1,83 @@
+<% content_for :title, "#{@plan.title} — Plano de Recuperação" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "recovery_plans" %>
+
+  <main class="app-content">
+    <%= link_to "← Planos de Recuperação", recovery_plans_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+      <h1 class="page-title" style="margin-bottom:0;"><%= @plan.title %></h1>
+      <span class="rp-badge rp-badge--<%= @plan.status %>">
+        <%= { "active" => "Ativo", "completed" => "Concluído", "cancelled" => "Cancelado" }[@plan.status] %>
+      </span>
+    </div>
+    <p class="page-subtitle">
+      <%= @plan.person.name %>
+      · Criado por <%= @plan.created_by.name %>
+      <%= @plan.cycle ? " · #{@plan.cycle.name}" : "" %>
+    </p>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
+      <div class="card">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:8px;">Motivo</div>
+        <p style="margin:0 0 16px;font-size:14px;line-height:1.6;"><%= @plan.reason %></p>
+
+        <% if @plan.description.present? %>
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:8px;">Expectativas</div>
+          <p style="margin:0;font-size:14px;line-height:1.6;"><%= @plan.description %></p>
+        <% end %>
+      </div>
+
+      <div class="card">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:12px;">Progresso</div>
+        <div style="font-size:32px;font-weight:700;margin-bottom:8px;"><%= @plan.progress_percent %>%</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:<%= @plan.progress_percent %>%;"></div>
+        </div>
+        <% if @plan.due_date %>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:12px;">
+            Prazo: <%= @plan.due_date.strftime("%d/%m/%Y") %>
+            <% if @plan.active? && @plan.due_date < Date.today %>
+              <span style="color:var(--color-error);font-weight:600;"> · Vencido</span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">Ações do plano</div>
+        <span style="font-size:12px;color:var(--color-text-secondary);"><%= @plan.actions.count { |a| a["done"] } %>/<%= @plan.actions.count %></span>
+      </div>
+      <% if @plan.actions.any? %>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <% @plan.actions.each do |action| %>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--color-surface-alt);border-radius:var(--radius-input);">
+              <div style="width:18px;height:18px;border-radius:4px;border:2px solid <%= action['done'] ? 'var(--color-success)' : 'var(--color-border)' %>;background:<%= action['done'] ? 'var(--color-success)' : 'transparent' %>;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <% if action["done"] %>
+                  <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <% end %>
+              </div>
+              <span style="font-size:14px;<%= action['done'] ? 'text-decoration:line-through;color:var(--color-text-secondary)' : '' %>"><%= action["title"] %></span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p style="color:var(--color-text-secondary);font-size:14px;margin:0;">Nenhuma ação cadastrada.</p>
+      <% end %>
+    </div>
+
+    <% if @plan.outcome.present? %>
+      <div class="card" style="margin-bottom:20px;border-left:3px solid var(--color-success);">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:8px;">Desfecho</div>
+        <p style="margin:0;font-size:14px;line-height:1.6;"><%= @plan.outcome %></p>
+      </div>
+    <% end %>
+
+    <% if @plan.created_by == current_person || current_person.hr_admin? || current_person.business_partner? %>
+      <%= link_to "Editar plano", edit_recovery_plan_path(@plan), class: "btn btn-secondary" %>
+    <% end %>
+  </main>
+</div>

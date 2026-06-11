@@ -112,6 +112,59 @@ body {
   font-weight: 600;
 }
 
+/* Nav group (Gestão de Desempenho) */
+.nav-group {
+  margin: 4px 0;
+}
+
+.nav-group-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-secondary);
+  cursor: default;
+  user-select: none;
+}
+
+.nav-group-label--active {
+  color: var(--color-accent);
+}
+
+.nav-group-items {
+  padding-left: 8px;
+  border-left: 2px solid var(--color-border);
+  margin-left: 26px;
+  margin-bottom: 4px;
+}
+
+.nav-group-items .nav-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-group-items .nav-sub-item:hover,
+.nav-group-items .nav-sub-item.active {
+  background: rgba(255, 87, 34, 0.08);
+  color: var(--color-accent);
+}
+
+.nav-group-items .nav-sub-item.active {
+  font-weight: 600;
+}
+
 .sidebar-footer {
   padding: 16px 20px;
   border-top: 1px solid var(--color-border);
@@ -511,3 +564,18 @@ body {
 .pdi-badge--in_progress  { background: #fff3e0; color: #e65100; }
 .pdi-badge--done         { background: #e8f5e9; color: #2e7d32; }
 .pdi-badge--cancelled    { background: #fce4ec; color: #c62828; }
+
+/* ===== RECOVERY PLAN BADGES ===== */
+.rp-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rp-badge--active    { background: rgba(255,87,34,0.1); color: var(--color-accent); }
+.rp-badge--completed { background: #e8f5e9; color: #2e7d32; }
+.rp-badge--cancelled { background: #f5f5f5; color: #6b6b6b; }

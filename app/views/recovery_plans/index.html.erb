@@ -1,0 +1,59 @@
+<% content_for :title, "Planos de Recuperação — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "recovery_plans" %>
+
+  <main class="app-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <h1 class="page-title" style="margin-bottom:4px;">Planos de Recuperação</h1>
+        <p class="page-subtitle" style="margin:0;">Acompanhamento de planos de melhoria de desempenho</p>
+      </div>
+      <% if current_person.manager? || current_person.director? || current_person.hr_admin? || current_person.business_partner? %>
+        <%= link_to "Novo plano", new_recovery_plan_path, class: "btn btn-primary" %>
+      <% end %>
+    </div>
+
+    <% if @plans.any? %>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <% @plans.each do |plan| %>
+          <%= link_to recovery_plan_path(plan), style: "text-decoration:none;" do %>
+            <div class="card" style="display:flex;align-items:center;gap:16px;padding:16px 20px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:<%= plan.active? ? 'rgba(255,87,34,0.1)' : 'var(--color-surface-alt)' %>;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="<%= plan.active? ? 'var(--color-accent)' : 'var(--color-text-secondary)' %>" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                  <span style="font-size:15px;font-weight:700;color:var(--color-text);"><%= plan.title %></span>
+                  <span class="rp-badge rp-badge--<%= plan.status %>">
+                    <%= { "active" => "Ativo", "completed" => "Concluído", "cancelled" => "Cancelado" }[plan.status] %>
+                  </span>
+                </div>
+                <div style="font-size:13px;color:var(--color-text-secondary);">
+                  <%= plan.person.name %>
+                  <span style="margin:0 6px;">·</span>
+                  Criado por <%= plan.created_by.name %>
+                  <% if plan.due_date %>
+                    <span style="margin:0 6px;">·</span>
+                    Deadline: <%= plan.due_date.strftime("%d/%m/%Y") %>
+                  <% end %>
+                </div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div style="font-size:20px;font-weight:700;color:var(--color-text);"><%= plan.progress_percent %>%</div>
+                <div style="font-size:11px;color:var(--color-text-secondary);">concluído</div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="card" style="text-align:center;padding:48px;">
+        <p style="color:var(--color-text-secondary);margin:0 0 16px;font-size:14px;">Nenhum plano de recuperação encontrado.</p>
+        <% if current_person.manager? || current_person.director? || current_person.hr_admin? || current_person.business_partner? %>
+          <%= link_to "Criar plano", new_recovery_plan_path, class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    <% end %>
+  </main>
+</div>
