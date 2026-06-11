@@ -1,0 +1,64 @@
+<% content_for :title, "Nova Avaliação — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "evaluations" %>
+
+  <main class="app-content">
+    <%= link_to "← Avaliações", evaluations_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+    <h1 class="page-title">Nova avaliação</h1>
+    <p class="page-subtitle">Avalie o desempenho e potencial de um colaborador.</p>
+
+    <div class="card" style="max-width:600px;">
+      <%= form_with model: @evaluation, local: true do |f| %>
+        <% if @evaluation.errors.any? %>
+          <div class="flash flash--alert" style="margin-bottom:20px;border-radius:var(--radius-input);">
+            <%= @evaluation.errors.full_messages.first %>
+          </div>
+        <% end %>
+
+        <div class="form-field">
+          <%= f.label :cycle_id, "Ciclo", class: "form-label" %>
+          <%= f.select :cycle_id, @cycles.map { |c| [c.name, c.id] },
+                { prompt: "Selecione um ciclo" }, class: "form-input" %>
+        </div>
+
+        <div class="form-field">
+          <%= f.label :evaluated_id, "Avaliado", class: "form-label" %>
+          <%= f.select :evaluated_id, @people.map { |p| [p.name, p.id] },
+                { prompt: "Selecione uma pessoa" }, class: "form-input" %>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-field">
+            <%= f.label :performance_score, "Desempenho (1–5)", class: "form-label" %>
+            <%= f.number_field :performance_score, min: 1, max: 5, step: 0.5, class: "form-input", placeholder: "Ex: 4.0" %>
+          </div>
+          <div class="form-field">
+            <%= f.label :potential_score, "Potencial (1–5)", class: "form-label" %>
+            <%= f.number_field :potential_score, min: 1, max: 5, step: 0.5, class: "form-input", placeholder: "Ex: 3.5" %>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <%= f.label :strengths, "Pontos fortes", class: "form-label" %>
+          <%= f.text_area :strengths, rows: 3, class: "form-input", placeholder: "O que essa pessoa faz bem..." %>
+        </div>
+
+        <div class="form-field">
+          <%= f.label :improvements, "Pontos de desenvolvimento", class: "form-label" %>
+          <%= f.text_area :improvements, rows: 3, class: "form-input", placeholder: "O que pode melhorar..." %>
+        </div>
+
+        <div class="form-field">
+          <%= f.label :overall_comment, "Comentário geral", class: "form-label" %>
+          <%= f.text_area :overall_comment, rows: 3, class: "form-input", placeholder: "Observações gerais..." %>
+        </div>
+
+        <div style="margin-top:28px;display:flex;gap:12px;">
+          <%= f.submit "Salvar rascunho", class: "btn btn-secondary" %>
+          <%= link_to "Cancelar", evaluations_path, class: "btn", style: "color:var(--color-text-secondary);" %>
+        </div>
+      <% end %>
+    </div>
+  </main>
+</div>

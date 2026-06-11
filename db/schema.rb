@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_000005) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_000006) do
   create_table "cycle_snapshots", force: :cascade do |t|
     t.integer "chapter_manager_id"
     t.datetime "created_at", null: false
@@ -34,6 +34,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_000005) do
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["status"], name: "index_cycles_on_status"
+  end
+
+  create_table "evaluations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "cycle_id", null: false
+    t.integer "evaluated_id", null: false
+    t.integer "evaluator_id", null: false
+    t.text "improvements"
+    t.text "overall_comment"
+    t.float "performance_score"
+    t.float "potential_score"
+    t.integer "status", default: 0, null: false
+    t.text "strengths"
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.index ["cycle_id", "evaluator_id", "evaluated_id"], name: "idx_evaluations_unique", unique: true
+    t.index ["cycle_id"], name: "index_evaluations_on_cycle_id"
+    t.index ["evaluated_id"], name: "index_evaluations_on_evaluated_id"
+    t.index ["evaluator_id"], name: "index_evaluations_on_evaluator_id"
+    t.index ["status"], name: "index_evaluations_on_status"
   end
 
   create_table "people", force: :cascade do |t|
@@ -79,6 +99,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_000005) do
   add_foreign_key "cycle_snapshots", "people"
   add_foreign_key "cycle_snapshots", "people", column: "chapter_manager_id"
   add_foreign_key "cycle_snapshots", "people", column: "stream_manager_id"
+  add_foreign_key "evaluations", "cycles"
+  add_foreign_key "evaluations", "people", column: "evaluated_id"
+  add_foreign_key "evaluations", "people", column: "evaluator_id"
   add_foreign_key "people", "people", column: "chapter_manager_id"
   add_foreign_key "people", "people", column: "stream_manager_id"
   add_foreign_key "permission_caches", "people", column: "target_id"

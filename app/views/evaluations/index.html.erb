@@ -1,0 +1,63 @@
+<% content_for :title, "Avaliações — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "evaluations" %>
+
+  <main class="app-content">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+      <h1 class="page-title" style="margin-bottom:0;">Avaliações</h1>
+      <%= link_to new_evaluation_path, class: "btn btn-primary" do %>
+        + Nova avaliação
+      <% end %>
+    </div>
+    <p class="page-subtitle">Avaliações que você está conduzindo.</p>
+
+    <%# Avaliações que estou fazendo %>
+    <% if @evaluations.empty? %>
+      <div class="card" style="text-align:center; padding:40px 24px; margin-bottom:32px;">
+        <p style="color:var(--color-text-secondary); margin:0 0 16px;">Nenhuma avaliação em andamento.</p>
+        <%= link_to "+ Criar avaliação", new_evaluation_path, class: "btn btn-primary" %>
+      </div>
+    <% else %>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:32px;">
+        <% @evaluations.each do |ev| %>
+          <%= link_to evaluation_path(ev), style: "text-decoration:none;" do %>
+            <div class="card eval-row">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:36px;height:36px;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;">
+                  <%= ev.evaluated.name.split(" ").first(2).map{|n|n[0]}.join %>
+                </div>
+                <div style="flex:1;">
+                  <div style="font-weight:600;font-size:15px;color:var(--color-text);"><%= ev.evaluated.name %></div>
+                  <div style="font-size:13px;color:var(--color-text-secondary);"><%= ev.cycle.name %></div>
+                </div>
+                <span class="cycle-badge cycle-badge--<%= ev.status == 'draft' ? 'draft' : 'open' %>">
+                  <%= ev.draft? ? "Rascunho" : "Enviada" %>
+                </span>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Avaliações que recebi %>
+    <% if @received.any? %>
+      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;">Avaliações recebidas</h2>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <% @received.each do |ev| %>
+          <div class="card" style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--color-surface-alt);border:1px solid var(--color-border);display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);font-weight:700;font-size:13px;flex-shrink:0;">
+              <%= ev.evaluator.name.split(" ").first(2).map{|n|n[0]}.join %>
+            </div>
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:15px;color:var(--color-text);">Por <%= ev.evaluator.name %></div>
+              <div style="font-size:13px;color:var(--color-text-secondary);"><%= ev.cycle.name %></div>
+            </div>
+            <span class="cycle-badge cycle-badge--open">Recebida</span>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </main>
+</div>

@@ -32,4 +32,24 @@ class NineBoxController < ApplicationController
     # Por enquanto, monta o grid vazio
     @quadrants = Array.new(9) { [] }
   end
+
+  def edit
+    @cycle  = Cycle.find(params[:cycle_id])
+    @config = @cycle.nine_box_config.presence || DEFAULT_CONFIG
+    @names  = @config["quadrant_names"] || DEFAULT_CONFIG["quadrant_names"]
+  end
+
+  def update
+    @cycle = Cycle.find(params[:cycle_id])
+    cfg = params.require(:nine_box).permit(:axis_x_label, :axis_y_label, quadrant_names: [])
+
+    new_config = {
+      "axis_x_label"    => cfg[:axis_x_label].presence || "Desempenho",
+      "axis_y_label"    => cfg[:axis_y_label].presence || "Potencial",
+      "quadrant_names"  => cfg[:quadrant_names].first(9)
+    }
+
+    @cycle.update!(nine_box_config: new_config)
+    redirect_to cycle_nine_box_path(@cycle), notice: "Configuração do 9-Box salva."
+  end
 end

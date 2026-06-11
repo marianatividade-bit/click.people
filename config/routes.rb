@@ -9,9 +9,10 @@ Rails.application.routes.draw do
   end
 
   resources :cycles, only: [:index, :new, :create, :show] do
-    resource :nine_box, only: [:show], controller: "nine_box"
+    resource :nine_box, only: [:show, :edit, :update], controller: "nine_box"
   end
   resources :people, only: [:index, :show]
+  resources :evaluations, only: [:index, :new, :create, :show, :update]
   get "/nine_box", to: "nine_box#index", as: :nine_box
 
   get "up" => "rails/health#show", as: :rails_health_check
