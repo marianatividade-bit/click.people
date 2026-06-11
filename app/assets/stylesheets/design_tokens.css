@@ -603,3 +603,43 @@ body {
 .rp-badge--active    { background: rgba(255,87,34,0.1); color: var(--color-accent); }
 .rp-badge--completed { background: #e8f5e9; color: #2e7d32; }
 .rp-badge--cancelled { background: #f5f5f5; color: #6b6b6b; }
+
+/* ===== ADMIN CONFIG CARDS ===== */
+.admin-config-card {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+}
+
+.admin-config-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 2px 8px rgba(255, 87, 34, 0.08);
+}
+
+.admin-config-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 87, 34, 0.08);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+.admin-config-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.admin-config-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}

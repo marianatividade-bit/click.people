@@ -1,0 +1,37 @@
+<% content_for :title, "Editar #{@cargo.name} — Admin" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "admin_cargos" %>
+
+  <main class="app-content">
+    <%= link_to "← Cargos", admin_cargos_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <h1 class="page-title">Editar Cargo</h1>
+
+    <%= form_with model: [:admin, @cargo], local: true do |f| %>
+      <div class="card" style="max-width:500px;margin-bottom:16px;">
+        <div class="form-field">
+          <%= f.label :name, "Nome do cargo", class: "form-label" %>
+          <%= f.text_field :name, class: "form-input" %>
+        </div>
+        <div class="form-field">
+          <%= f.label :level, "Nível / Faixa", class: "form-label" %>
+          <%= f.text_field :level, class: "form-input" %>
+        </div>
+        <div class="form-field">
+          <%= f.label :description, "Descrição", class: "form-label" %>
+          <%= f.text_area :description, rows: 3, class: "form-input" %>
+        </div>
+        <div class="form-field" style="margin-bottom:0;display:flex;align-items:center;gap:10px;">
+          <%= f.check_box :active, style: "width:16px;height:16px;accent-color:var(--color-accent);" %>
+          <%= f.label :active, "Cargo ativo", class: "form-label", style: "margin-bottom:0;" %>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;">
+        <%= f.submit "Salvar", class: "btn btn-primary" %>
+        <%= link_to "Cancelar", admin_cargos_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </main>
+</div>

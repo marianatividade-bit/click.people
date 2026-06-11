@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_185145) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_190945) do
+  create_table "cargos", force: :cascade do |t|
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "level"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "cycle_results", force: :cascade do |t|
     t.datetime "calibrated_at"
     t.integer "calibrated_by_id"

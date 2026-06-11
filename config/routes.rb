@@ -30,6 +30,11 @@ Rails.application.routes.draw do
   end
   get "/nine_box", to: "nine_box#index", as: :nine_box
 
+  namespace :admin do
+    root "dashboard#index"
+    resources :cargos
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
   root "dashboard#index"
 end

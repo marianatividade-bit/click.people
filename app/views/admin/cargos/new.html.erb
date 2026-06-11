@@ -1,0 +1,33 @@
+<% content_for :title, "Novo Cargo — Admin" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "admin_cargos" %>
+
+  <main class="app-content">
+    <%= link_to "← Cargos", admin_cargos_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <h1 class="page-title">Novo Cargo</h1>
+
+    <%= form_with model: [:admin, @cargo], local: true do |f| %>
+      <div class="card" style="max-width:500px;margin-bottom:16px;">
+        <div class="form-field">
+          <%= f.label :name, "Nome do cargo", class: "form-label" %>
+          <%= f.text_field :name, class: "form-input", placeholder: "Ex: Engenheira de Software" %>
+        </div>
+        <div class="form-field">
+          <%= f.label :level, "Nível / Faixa", class: "form-label" %>
+          <%= f.text_field :level, class: "form-input", placeholder: "Ex: Júnior, Pleno, Sênior, Staff..." %>
+        </div>
+        <div class="form-field" style="margin-bottom:0;">
+          <%= f.label :description, "Descrição (opcional)", class: "form-label" %>
+          <%= f.text_area :description, rows: 3, class: "form-input", placeholder: "Responsabilidades e escopo do cargo..." %>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;">
+        <%= f.submit "Criar cargo", class: "btn btn-primary" %>
+        <%= link_to "Cancelar", admin_cargos_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </main>
+</div>

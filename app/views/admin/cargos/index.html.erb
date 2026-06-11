@@ -1,0 +1,58 @@
+<% content_for :title, "Cargos — Admin" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "admin_cargos" %>
+
+  <main class="app-content">
+    <%= link_to "← Organização", admin_root_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <h1 class="page-title" style="margin-bottom:4px;">Cargos</h1>
+        <p class="page-subtitle" style="margin:0;"><%= @cargos.count %> cargos cadastrados</p>
+      </div>
+      <%= link_to "Novo cargo", new_admin_cargo_path, class: "btn btn-primary" %>
+    </div>
+
+    <% if @cargos.any? %>
+      <div class="card" style="max-width:700px;padding:0;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="background:var(--color-surface-alt);border-bottom:1px solid var(--color-border);">
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">Cargo</th>
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">Nível</th>
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">Status</th>
+              <th style="padding:12px 20px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @cargos.each do |cargo| %>
+              <tr style="border-bottom:1px solid var(--color-border);">
+                <td style="padding:14px 20px;">
+                  <div style="font-size:14px;font-weight:600;"><%= cargo.name %></div>
+                  <% if cargo.description.present? %>
+                    <div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;"><%= cargo.description.truncate(60) %></div>
+                  <% end %>
+                </td>
+                <td style="padding:14px 20px;font-size:14px;color:var(--color-text-secondary);"><%= cargo.level.presence || "—" %></td>
+                <td style="padding:14px 20px;">
+                  <span class="cycle-badge <%= cargo.active? ? 'cycle-badge--open' : 'cycle-badge--closed' %>">
+                    <%= cargo.active? ? "Ativo" : "Inativo" %>
+                  </span>
+                </td>
+                <td style="padding:14px 20px;text-align:right;">
+                  <%= link_to "Editar", edit_admin_cargo_path(cargo), style: "font-size:13px;color:var(--color-accent);text-decoration:none;font-weight:600;" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="card" style="max-width:700px;text-align:center;padding:48px;">
+        <p style="color:var(--color-text-secondary);margin:0 0 16px;font-size:14px;">Nenhum cargo cadastrado.</p>
+        <%= link_to "Criar primeiro cargo", new_admin_cargo_path, class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </main>
+</div>
