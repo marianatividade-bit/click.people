@@ -1,0 +1,123 @@
+<% content_for :title, "Avaliação de #{@evaluation.evaluated.name} — Click.People" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "evaluations" %>
+
+  <main class="app-content" style="max-width:720px;">
+    <%= link_to "← Minhas avaliações", evaluations_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <%# Header with person info %>
+    <div class="card" style="margin-bottom:24px;padding:20px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <%= person_avatar(@evaluation.evaluated, size: 52, font_size: 20) %>
+        <div style="flex:1;">
+          <% if @evaluation.self_eval? %>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--color-text-secondary);margin-bottom:2px;">Autoavaliação</div>
+          <% else %>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--color-text-secondary);margin-bottom:2px;"><%= @evaluation.type_label %></div>
+          <% end %>
+          <div style="font-size:18px;font-weight:700;"><%= @evaluation.self_eval? ? "Sua autoavaliação" : @evaluation.evaluated.name %></div>
+          <div style="font-size:13px;color:var(--color-text-secondary);">
+            <% unless @evaluation.self_eval? %><%= @evaluation.evaluated.email %> · <% end %><%= @evaluation.cycle.name %>
+          </div>
+        </div>
+        <% answered_count = @answers.values.count { |a| a.numeric_value.present? || a.text_value.present? } %>
+        <div style="text-align:right;">
+          <div style="font-size:22px;font-weight:700;color:var(--color-accent);"><%= answered_count %>/<%= @questions.count %></div>
+          <div style="font-size:12px;color:var(--color-text-secondary);">respondidas</div>
+        </div>
+      </div>
+    </div>
+
+    <%= form_with url: evaluation_path(@evaluation), method: :patch, local: true do |f| %>
+      <% current_dimension = nil %>
+
+      <% @questions.each do |question| %>
+        <%# Section header when dimension changes %>
+        <% if question.dimension != current_dimension %>
+          <% current_dimension = question.dimension %>
+          <div style="margin:24px 0 12px;">
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--color-text-secondary);">
+              <%= question.dimension_label %>
+            </span>
+          </div>
+        <% end %>
+
+        <% answer = @answers[question.id] %>
+
+        <div class="card" style="margin-bottom:12px;">
+          <p style="font-size:14px;font-weight:600;margin:0 0 16px;line-height:1.5;"><%= question.text %></p>
+
+          <% if question.numeric? %>
+            <%# Score slider + number buttons %>
+            <div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <% (question.min_score..question.max_score).each do |score| %>
+                  <% selected = answer&.numeric_value&.to_i == score %>
+                  <label style="cursor:pointer;">
+                    <input type="radio"
+                           name="answers[<%= question.id %>]"
+                           value="<%= score %>"
+                           <%= selected ? "checked" : "" %>
+                           style="display:none;"
+                           class="score-radio"
+                           onchange="updateScoreButton(this)">
+                    <div class="score-btn" style="width:40px;height:40px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;border:2px solid <%= selected ? 'var(--color-accent)' : 'var(--color-border)' %>;background:<%= selected ? 'var(--color-accent)' : '#fff' %>;color:<%= selected ? '#fff' : 'var(--color-text)' %>;transition:all .1s;">
+                      <%= score %>
+                    </div>
+                  </label>
+                <% end %>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:6px;">
+                <span style="font-size:11px;color:var(--color-text-secondary);">Baixo (<%= question.min_score %>)</span>
+                <span style="font-size:11px;color:var(--color-text-secondary);">Alto (<%= question.max_score %>)</span>
+              </div>
+            </div>
+          <% else %>
+            <%# Text area %>
+            <textarea name="answers[<%= question.id %>]"
+                      class="form-input"
+                      rows="4"
+                      placeholder="Escreva aqui..."
+                      style="resize:vertical;"><%= answer&.text_value %></textarea>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%# Submit area %>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:24px;padding:20px;background:var(--color-surface-alt);border-radius:var(--radius-md);">
+        <button type="submit" name="submit" value="save"
+                class="btn btn-secondary">
+          Salvar rascunho
+        </button>
+        <button type="submit" name="submit" value="complete"
+                class="btn btn-primary"
+                onclick="return confirm('Enviar avaliação? Após confirmar, não será possível editar.')">
+          Enviar avaliação
+        </button>
+        <span style="font-size:12px;color:var(--color-text-secondary);margin-left:auto;">
+          Todas as respostas são confidenciais.
+        </span>
+      </div>
+    <% end %>
+  </main>
+</div>
+
+<script>
+  function updateScoreButton(radio) {
+    const group = radio.closest('.card').querySelectorAll('.score-btn');
+    const radios = radio.closest('.card').querySelectorAll('.score-radio');
+    radios.forEach((r, i) => {
+      const btn = group[i];
+      if (r.checked) {
+        btn.style.background = 'var(--color-accent)';
+        btn.style.borderColor = 'var(--color-accent)';
+        btn.style.color = '#fff';
+      } else {
+        btn.style.background = '#fff';
+        btn.style.borderColor = 'var(--color-border)';
+        btn.style.color = 'var(--color-text)';
+      }
+    });
+  }
+</script>

@@ -20,6 +20,10 @@
       Entrar com Google
     <% end %>
 
-    <p class="login-note">Acesso restrito a colaboradores Clicksign</p>
+    <% if alert.present? %>
+      <p class="login-note" style="color:#c53030;margin-top:16px;"><%= alert %></p>
+    <% else %>
+      <p class="login-note">Acesso por convite — fale com o RH para ser cadastrado</p>
+    <% end %>
   </div>
 </div>

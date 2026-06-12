@@ -1,0 +1,85 @@
+<% content_for :title, "Validar indicações — #{@cycle.name}" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "cycles" %>
+
+  <main class="app-content">
+    <%= link_to "← #{@cycle.name}", cycle_path(@cycle), style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <h1 class="page-title" style="margin-bottom:4px;">Validar indicações do meu time</h1>
+    <p class="page-subtitle" style="margin:0 0 28px;"><%= @pending_nominations.count %> indicação(ões) aguardando aprovação.</p>
+
+    <% if @all_nominations.empty? %>
+      <div class="card" style="text-align:center;padding:48px;">
+        <p style="color:var(--color-text-secondary);margin:0;">Nenhuma indicação registrada para o seu time ainda.</p>
+      </div>
+    <% else %>
+      <%# Group by evaluated person %>
+      <% @all_nominations.group_by(&:evaluated).each do |evaluated, noms| %>
+        <div class="card" style="margin-bottom:16px;padding:0;overflow:hidden;">
+          <div style="padding:16px 20px;border-bottom:1px solid var(--color-border);background:var(--color-surface-alt);display:flex;align-items:center;gap:12px;">
+            <%= person_avatar(evaluated, size: 36) %>
+            <div>
+              <div style="font-size:14px;font-weight:700;"><%= evaluated.name %></div>
+              <div style="font-size:12px;color:var(--color-text-secondary);"><%= noms.count %> indicação(ões) · <%= noms.count { |n| n.pending? } %> pendente(s)</div>
+            </div>
+          </div>
+
+          <div>
+            <% noms.each do |nom| %>
+              <div style="padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--color-border);">
+                <%= person_avatar(nom.nominee, size: 32) %>
+                <div style="flex:1;">
+                  <div style="font-size:14px;font-weight:500;"><%= nom.nominee.name %></div>
+                  <div style="font-size:12px;color:var(--color-text-secondary);"><%= nom.nominee.email %></div>
+                </div>
+
+                <% if nom.pending? %>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <%= button_to "Aprovar", approve_cycle_nomination_path(@cycle, nom),
+                          method: :patch,
+                          style: "font-size:12px;font-weight:600;background:#dcfce7;color:#14532d;border:none;padding:5px 14px;border-radius:var(--radius-pill);cursor:pointer;" %>
+                    <% # Reject with reason - use a small inline form %>
+                    <button type="button"
+                            onclick="toggleRejectForm('<%= nom.id %>')"
+                            style="font-size:12px;font-weight:600;background:#fee2e2;color:#991b1b;border:none;padding:5px 14px;border-radius:var(--radius-pill);cursor:pointer;">
+                      Rejeitar
+                    </button>
+                  </div>
+                <% else %>
+                  <% badge_style = nom.approved? ? "background:#dcfce7;color:#14532d;" : "background:#fee2e2;color:#991b1b;" %>
+                  <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--radius-pill);<%= badge_style %>">
+                    <%= nom.approved? ? "Aprovada" : "Rejeitada" %>
+                  </span>
+                <% end %>
+              </div>
+
+              <%# Reject form (hidden by default) %>
+              <% if nom.pending? %>
+                <div id="reject-form-<%= nom.id %>" style="display:none;padding:12px 20px;background:#fff5f5;border-bottom:1px solid var(--color-border);">
+                  <%= form_with url: reject_cycle_nomination_path(@cycle, nom), method: :patch, local: true do |f| %>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <input type="text" name="rejection_reason" placeholder="Motivo da rejeição (opcional)"
+                             class="form-input" style="flex:1;font-size:13px;">
+                      <input type="submit" value="Confirmar rejeição"
+                             style="font-size:12px;font-weight:600;background:#e53e3e;color:#fff;border:none;padding:8px 14px;border-radius:var(--radius-pill);cursor:pointer;white-space:nowrap;">
+                      <button type="button" onclick="toggleRejectForm('<%= nom.id %>')"
+                              style="font-size:12px;color:var(--color-text-secondary);background:none;border:none;cursor:pointer;">Cancelar</button>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </main>
+</div>
+
+<script>
+  function toggleRejectForm(id) {
+    const el = document.getElementById('reject-form-' + id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+</script>

@@ -1,61 +1,94 @@
 class EvaluationsController < ApplicationController
-  before_action :set_evaluation, only: [:show, :update]
-
   def index
-    @cycle = Cycle.order(created_at: :desc).first
-    @evaluations = current_person.evaluations_given.includes(:evaluated, :cycle).order(created_at: :desc)
-    @received = current_person.evaluations_received.submitted.includes(:evaluator, :cycle).order(submitted_at: :desc)
-  end
-
-  def new
-    @cycles = Cycle.where(status: [:draft, :open, :evaluation]).order(created_at: :desc)
-    @people = Person.where.not(id: current_person.id).order(:name)
-    @evaluation = Evaluation.new(
-      evaluator: current_person,
-      cycle_id: params[:cycle_id],
-      evaluated_id: params[:evaluated_id]
-    )
-  end
-
-  def create
-    @evaluation = Evaluation.new(evaluation_params.merge(evaluator: current_person))
-    if @evaluation.save
-      redirect_to evaluations_path, notice: "Avaliação salva como rascunho."
-    else
-      @cycles = Cycle.where(status: [:draft, :open, :evaluation]).order(created_at: :desc)
-      @people = Person.where.not(id: current_person.id).order(:name)
-      render :new, status: :unprocessable_entity
-    end
+    # "My evaluations" dashboard
+    @pending_as_evaluator = Evaluation.where(evaluator: current_person, cycle: active_cycles)
+                                      .where(status: [:draft, :in_progress])
+                                      .includes(:cycle, :evaluated)
+                                      .order(:cycle_id)
+    @completed_as_evaluator = Evaluation.where(evaluator: current_person)
+                                        .where(status: :completed)
+                                        .includes(:cycle, :evaluated)
+                                        .order(completed_at: :desc)
+                                        .limit(20)
+    @being_evaluated = Evaluation.where(evaluated: current_person, cycle: active_cycles)
+                                 .includes(:cycle, :evaluator)
+                                 .order(:cycle_id)
   end
 
   def show
+    @evaluation = Evaluation.find(params[:id])
+    @questions  = @evaluation.cycle.questions.order(:position)
+    @answers    = @evaluation.answers.index_by(&:question_id)
+    authorize_evaluation!
+  end
+
+  def new
+    # Direct-create an evaluation (admin use or re-entry)
+    @cycle      = Cycle.find(params[:cycle_id])
+    @evaluation = @cycle.evaluations.new(evaluator: current_person)
+  end
+
+  def create
+    @cycle = Cycle.find(params[:cycle_id])
+    @evaluation = @cycle.evaluations.find_or_initialize_by(
+      evaluator: current_person,
+      evaluated_id: params[:evaluated_id],
+      evaluation_type: params[:evaluation_type]
+    )
+    if @evaluation.save
+      redirect_to edit_evaluation_path(@evaluation)
+    else
+      redirect_to evaluations_path, alert: @evaluation.errors.full_messages.first
+    end
+  end
+
+  def edit
+    @evaluation = Evaluation.find(params[:id])
+    @questions  = @evaluation.cycle.questions.order(:position)
+    @answers    = @evaluation.answers.index_by(&:question_id)
+    authorize_evaluation!
+    @evaluation.update!(status: :in_progress) if @evaluation.draft?
   end
 
   def update
-    if params[:submit]
-      @evaluation.update(evaluation_params)
-      @evaluation.submit!
-      redirect_to evaluations_path, notice: "Avaliação enviada!"
+    @evaluation = Evaluation.find(params[:id])
+    authorize_evaluation!
+
+    answers_data = params[:answers] || {}
+    save_answers(@evaluation, answers_data)
+
+    if params[:submit] == "complete"
+      @evaluation.complete!
+      redirect_to evaluations_path, notice: "Avaliação de #{@evaluation.evaluated.name} enviada com sucesso."
     else
-      if @evaluation.update(evaluation_params)
-        redirect_to evaluation_path(@evaluation), notice: "Rascunho salvo."
-      else
-        render :show, status: :unprocessable_entity
-      end
+      redirect_to edit_evaluation_path(@evaluation), notice: "Rascunho salvo."
     end
   end
 
   private
 
-  def set_evaluation
-    @evaluation = current_person.evaluations_given.find(params[:id])
+  def active_cycles
+    Cycle.where(status: [:nominations_open, :validating, :evaluation_open, :calibration])
   end
 
-  def evaluation_params
-    params.require(:evaluation).permit(
-      :cycle_id, :evaluated_id,
-      :performance_score, :potential_score,
-      :strengths, :improvements, :overall_comment
-    )
+  def authorize_evaluation!
+    unless @evaluation.evaluator == current_person
+      redirect_to evaluations_path, alert: "Você não tem permissão para acessar esta avaliação."
+    end
+  end
+
+  def save_answers(evaluation, answers_data)
+    answers_data.each do |question_id, value|
+      question = Question.find_by(id: question_id)
+      next unless question
+
+      answer = evaluation.answers.find_or_initialize_by(question_id: question_id)
+      if question.numeric?
+        answer.numeric_value = value.presence
+      else
+        answer.text_value = value.presence
+      end
+      answer.save
+    end
   end
 end

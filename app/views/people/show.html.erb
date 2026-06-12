@@ -51,13 +51,15 @@
       <%# Avaliações recentes %>
       <div class="card">
         <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin-bottom:12px;">Avaliações recentes</div>
-        <% recent = Evaluation.for_evaluated(@person).submitted.includes(:cycle).order(submitted_at: :desc).limit(3) %>
+        <% recent = Evaluation.for_evaluated(@person).submitted.includes(:cycle).order(completed_at: :desc).limit(3) %>
+        <% results_by_cycle = @person.cycle_results.index_by(&:cycle_id) %>
         <% if recent.any? %>
           <% recent.each do |ev| %>
+            <% result = results_by_cycle[ev.cycle_id] %>
             <div style="font-size:13px;margin-bottom:6px;display:flex;justify-content:space-between;">
               <span><%= ev.cycle.name %></span>
               <span style="color:var(--color-text-secondary);">
-                P: <%= ev.performance_score&.round(1) || "—" %> · Pot: <%= ev.potential_score&.round(1) || "—" %>
+                P: <%= result&.performance_score&.round(1) || "—" %> · Pot: <%= result&.potential_score&.round(1) || "—" %>
               </span>
             </div>
           <% end %>

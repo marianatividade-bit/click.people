@@ -6,14 +6,25 @@ class Person < ApplicationRecord
   enum :status, { active: 0, inactive: 1 }
 
   def self.from_omniauth(auth)
-    find_or_initialize_by(provider: auth.provider, uid: auth.uid).tap do |person|
-      person.email      = auth.info.email
-      person.name       = auth.info.name
-      person.google_uid = auth.uid
-      person.status     = :active if person.new_record?
-      person.save!
+    person = find_by(email: auth.info.email)
+
+    unless person
+      dummy = new
+      dummy.errors.add(:base, "Acesso não autorizado. Solicite ao RH o seu cadastro na plataforma.")
+      return dummy
+    end
+
+    person.tap do |p|
+      p.name       = auth.info.name if p.name.blank?
+      p.google_uid = auth.uid
+      p.provider   = auth.provider
+      p.uid        = auth.uid
+      p.status     = :active if p.status.nil?
+      p.save!
     end
   end
+
+  has_one_attached :photo
 
   belongs_to :chapter_manager, class_name: "Person", optional: true
   belongs_to :stream_manager,  class_name: "Person", optional: true
@@ -34,7 +45,7 @@ class Person < ApplicationRecord
 
   validates :name,       presence: true
   validates :email,      presence: true, uniqueness: true
-  validates :google_uid, presence: true, uniqueness: true
+  validates :google_uid, uniqueness: true, allow_nil: true
 
   after_update :enqueue_permission_cache_rebuild, if: :org_changed?
 

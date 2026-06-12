@@ -1,60 +1,101 @@
-<% content_for :title, "Avaliações — Click.People" %>
+<% content_for :title, "Minhas Avaliações — Click.People" %>
 
 <div class="app-shell">
   <%= render "shared/sidebar", active: "evaluations" %>
 
   <main class="app-content">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
-      <h1 class="page-title" style="margin-bottom:0;">Avaliações</h1>
-      <%= link_to new_evaluation_path, class: "btn btn-primary" do %>
-        + Nova avaliação
-      <% end %>
-    </div>
-    <p class="page-subtitle">Avaliações que você está conduzindo.</p>
+    <h1 class="page-title" style="margin-bottom:4px;">Minhas avaliações</h1>
+    <p class="page-subtitle" style="margin:0 0 28px;">Avaliações que você precisa responder e acompanhamento das suas.</p>
 
-    <%# Avaliações que estou fazendo %>
-    <% if @evaluations.empty? %>
-      <div class="card" style="text-align:center; padding:40px 24px; margin-bottom:32px;">
-        <p style="color:var(--color-text-secondary); margin:0 0 16px;">Nenhuma avaliação em andamento.</p>
-        <%= link_to "+ Criar avaliação", new_evaluation_path, class: "btn btn-primary" %>
-      </div>
-    <% else %>
-      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:32px;">
-        <% @evaluations.each do |ev| %>
-          <%= link_to evaluation_path(ev), style: "text-decoration:none;" do %>
-            <div class="card eval-row">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:36px;height:36px;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;">
-                  <%= ev.evaluated.name.split(" ").first(2).map{|n|n[0]}.join %>
+    <%# Pending evaluations %>
+    <% if @pending_as_evaluator.any? %>
+      <div style="margin-bottom:32px;">
+        <h2 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin:0 0 12px;">
+          Pendentes (<%= @pending_as_evaluator.count %>)
+        </h2>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <% @pending_as_evaluator.each do |eval| %>
+            <div class="card" style="padding:0;overflow:hidden;">
+              <div style="display:flex;align-items:center;gap:0;">
+                <div style="width:4px;align-self:stretch;background:var(--color-accent);flex-shrink:0;"></div>
+                <div style="flex:1;padding:16px 20px;display:flex;align-items:center;gap:14px;">
+                  <%= person_avatar(eval.evaluated, size: 40) %>
+                  <div style="flex:1;">
+                    <div style="font-size:14px;font-weight:600;margin-bottom:2px;">
+                      <% if eval.self_eval? %>
+                        Autoavaliação
+                      <% else %>
+                        Avaliar <%= eval.evaluated.name %>
+                      <% end %>
+                    </div>
+                    <div style="font-size:12px;color:var(--color-text-secondary);display:flex;gap:12px;">
+                      <span><%= eval.cycle.name %></span>
+                      <span><%= eval.type_label %></span>
+                      <% if eval.in_progress? %>
+                        <span style="color:var(--color-accent);font-weight:600;">Em andamento</span>
+                      <% end %>
+                    </div>
+                  </div>
+                  <%= link_to eval.in_progress? ? "Continuar →" : "Responder →",
+                        edit_evaluation_path(eval),
+                        class: "btn btn-primary",
+                        style: "font-size:13px;white-space:nowrap;" %>
                 </div>
-                <div style="flex:1;">
-                  <div style="font-weight:600;font-size:15px;color:var(--color-text);"><%= ev.evaluated.name %></div>
-                  <div style="font-size:13px;color:var(--color-text-secondary);"><%= ev.cycle.name %></div>
-                </div>
-                <span class="cycle-badge cycle-badge--<%= ev.status == 'draft' ? 'draft' : 'open' %>">
-                  <%= ev.draft? ? "Rascunho" : "Enviada" %>
-                </span>
               </div>
             </div>
           <% end %>
-        <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="card" style="text-align:center;padding:48px;margin-bottom:32px;">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--color-surface-alt);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="var(--color-text-secondary)" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <p style="font-size:14px;font-weight:600;margin:0 0 4px;">Nenhuma avaliação pendente</p>
+        <p style="font-size:13px;color:var(--color-text-secondary);margin:0;">Você está em dia.</p>
       </div>
     <% end %>
 
-    <%# Avaliações que recebi %>
-    <% if @received.any? %>
-      <h2 style="font-size:16px;font-weight:700;margin:0 0 12px;">Avaliações recebidas</h2>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <% @received.each do |ev| %>
-          <div class="card" style="display:flex;align-items:center;gap:12px;">
-            <div style="width:36px;height:36px;border-radius:50%;background:var(--color-surface-alt);border:1px solid var(--color-border);display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);font-weight:700;font-size:13px;flex-shrink:0;">
-              <%= ev.evaluator.name.split(" ").first(2).map{|n|n[0]}.join %>
+    <%# My evaluation status (being evaluated) %>
+    <% if @being_evaluated.any? %>
+      <div style="margin-bottom:32px;">
+        <h2 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin:0 0 12px;">
+          Como estou sendo avaliado(a)
+        </h2>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <% @being_evaluated.group_by(&:cycle).each do |cycle, evals| %>
+            <div class="card" style="padding:16px;">
+              <div style="font-size:13px;font-weight:600;margin-bottom:8px;"><%= cycle.name %></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <% evals.each do |ev| %>
+                  <% bg = ev.completed? ? "#dcfce7" : "#f5f5f5" %>
+                  <% color = ev.completed? ? "#14532d" : "#6b6b6b" %>
+                  <span style="font-size:12px;padding:3px 10px;border-radius:var(--radius-pill);background:<%= bg %>;color:<%= color %>;">
+                    <%= ev.type_label %> <%= ev.completed? ? "✓" : "..." %>
+                  </span>
+                <% end %>
+              </div>
             </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%# Completed %>
+    <% if @completed_as_evaluator.any? %>
+      <h2 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);margin:0 0 12px;">
+        Concluídas
+      </h2>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <% @completed_as_evaluator.each do |eval| %>
+          <div class="card" style="padding:14px 20px;display:flex;align-items:center;gap:12px;opacity:0.7;">
+            <%= person_avatar(eval.evaluated, size: 32) %>
             <div style="flex:1;">
-              <div style="font-weight:600;font-size:15px;color:var(--color-text);">Por <%= ev.evaluator.name %></div>
-              <div style="font-size:13px;color:var(--color-text-secondary);"><%= ev.cycle.name %></div>
+              <span style="font-size:14px;font-weight:500;"><%= eval.self_eval? ? "Autoavaliação" : eval.evaluated.name %></span>
+              <span style="font-size:12px;color:var(--color-text-secondary);margin-left:8px;"><%= eval.cycle.name %></span>
             </div>
-            <span class="cycle-badge cycle-badge--open">Recebida</span>
+            <span style="font-size:12px;color:var(--color-text-secondary);"><%= eval.completed_at&.strftime("%d/%m/%Y") %></span>
+            <%= link_to "Ver", evaluation_path(eval), style: "font-size:12px;color:var(--color-accent);text-decoration:none;font-weight:600;margin-left:8px;" %>
           </div>
         <% end %>
       </div>

@@ -1,0 +1,89 @@
+<% content_for :title, "Colaboradores — Admin" %>
+
+<div class="app-shell">
+  <%= render "shared/sidebar", active: "admin_people" %>
+
+  <main class="app-content">
+    <%= link_to "← Organização", admin_root_path, style: "font-size:14px;color:var(--color-text-secondary);text-decoration:none;display:inline-block;margin-bottom:24px;" %>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <h1 class="page-title" style="margin-bottom:4px;">Colaboradores</h1>
+        <p class="page-subtitle" style="margin:0;"><%= @people.count %> pessoas cadastradas</p>
+      </div>
+      <%= link_to "Novo colaborador", new_admin_person_path, class: "btn btn-primary" %>
+    </div>
+
+    <% if @people.any? %>
+      <div class="card" style="max-width:800px;padding:0;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="background:var(--color-surface-alt);border-bottom:1px solid var(--color-border);">
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">Nome</th>
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">E-mail</th>
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">Papel</th>
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-secondary);">Status</th>
+              <th style="padding:12px 20px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @people.each do |person| %>
+              <tr style="border-bottom:1px solid var(--color-border);">
+                <td style="padding:14px 20px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <%= person_avatar(person, size: 32, font_size: 13) %>
+                    <div>
+                      <div style="font-size:14px;font-weight:600;"><%= person.name %></div>
+                      <% unless person.google_uid.present? %>
+                        <div style="font-size:11px;color:var(--color-text-secondary);">Aguardando primeiro login</div>
+                      <% end %>
+                    </div>
+                  </div>
+                </td>
+                <td style="padding:14px 20px;font-size:14px;color:var(--color-text-secondary);"><%= person.email %></td>
+                <td style="padding:14px 20px;">
+                  <span style="font-size:12px;font-weight:600;background:var(--color-surface-alt);border-radius:var(--radius-pill);padding:3px 10px;color:var(--color-text-secondary);">
+                    <%= I18n.t("roles.#{person.role}", default: person.role.humanize) %>
+                  </span>
+                </td>
+                <td style="padding:14px 20px;">
+                  <span class="cycle-badge <%= person.active? ? 'cycle-badge--open' : 'cycle-badge--closed' %>">
+                    <%= person.active? ? "Ativo" : "Inativo" %>
+                  </span>
+                </td>
+                <td style="padding:14px 20px;text-align:right;">
+                  <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;">
+                    <%= link_to "Editar", edit_admin_person_path(person),
+                          style: "font-size:13px;color:var(--color-accent);text-decoration:none;font-weight:600;" %>
+                    <% if person.id != current_person.id %>
+                      <% if person.active? %>
+                        <%= button_to "Desativar", deactivate_admin_person_path(person),
+                              method: :patch,
+                              style: "font-size:13px;color:#92400e;background:none;border:none;cursor:pointer;padding:0;",
+                              data: { confirm: "Desativar #{person.name}?" } %>
+                      <% else %>
+                        <%= button_to "Reativar", reactivate_admin_person_path(person),
+                              method: :patch,
+                              style: "font-size:13px;color:#15803d;background:none;border:none;cursor:pointer;padding:0;",
+                              data: { confirm: "Reativar #{person.name}?" } %>
+                      <% end %>
+                      <%= button_to "Excluir", admin_person_path(person),
+                            method: :delete,
+                            style: "font-size:13px;color:#e53e3e;background:none;border:none;cursor:pointer;padding:0;",
+                            data: { confirm: "Excluir #{person.name} permanentemente? Esta ação não pode ser desfeita." } %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="card" style="max-width:800px;text-align:center;padding:48px;">
+        <p style="color:var(--color-text-secondary);margin:0 0 16px;font-size:14px;">Nenhum colaborador cadastrado.</p>
+        <%= link_to "Adicionar colaborador", new_admin_person_path, class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </main>
+</div>

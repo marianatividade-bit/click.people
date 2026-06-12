@@ -73,15 +73,34 @@ body {
 
 /* Sidebar internals */
 .sidebar-logo {
-  padding: 24px 20px 16px;
+  padding: 20px 20px 16px;
   border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.sidebar-logo span {
-  font-size: 18px;
+.sidebar-logo__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-logo__wordmark {
+  font-size: 15px;
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--color-text);
   letter-spacing: -0.3px;
+  line-height: 1;
+}
+
+.sidebar-logo__product {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding-left: 40px;
 }
 
 .sidebar-nav {
@@ -383,15 +402,60 @@ body {
   white-space: nowrap;
 }
 
-.cycle-badge--draft       { background: #f5f5f5; color: #6b6b6b; }
-.cycle-badge--open        { background: #e8f5e9; color: #2e7d32; }
-.cycle-badge--evaluation  { background: #fff3e0; color: #e65100; }
-.cycle-badge--calibration { background: #fce4ec; color: #c62828; }
-.cycle-badge--closed      { background: #eeeeee; color: #424242; }
+.cycle-badge--draft             { background: #f5f5f5; color: #6b6b6b; }
+.cycle-badge--open              { background: #e8f5e9; color: #2e7d32; }
+.cycle-badge--nominations_open  { background: #fef3c7; color: #92400e; }
+.cycle-badge--validating        { background: #ede9fe; color: #4c1d95; }
+.cycle-badge--evaluation_open   { background: #fff3e0; color: #e65100; }
+.cycle-badge--evaluation        { background: #fff3e0; color: #e65100; }
+.cycle-badge--calibration       { background: #dbeafe; color: #1e40af; }
+.cycle-badge--closed            { background: #dcfce7; color: #14532d; }
 
 /* Cycle list row hover */
 .cycle-row { transition: border-color 0.15s; }
 .cycle-row:hover { border-color: var(--color-accent); }
+
+/* ── Cycle table ── */
+.cycle-table-row { transition: background 0.1s; }
+.cycle-table-row:hover { background: var(--color-surface-alt); }
+
+/* Icon action buttons */
+.icon-action-wrap { position: relative; display: inline-flex; }
+.icon-action-wrap:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.icon-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  text-decoration: none;
+  padding: 0;
+}
+.icon-action:hover { background: var(--color-surface-alt); color: var(--color-text); }
+.icon-action--danger { color: #9ca3af; }
+.icon-action--danger:hover { background: #fee2e2; color: #e53e3e; }
 
 /* ===== 9-BOX ===== */
 .ninebox-wrapper {
