@@ -1,0 +1,125 @@
+<% content_for :active_nav, "onboarding_trails" %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><%= @trail.name %></h1>
+    <p class="page-subtitle"><%= @trail.description.presence || "Trilha de onboarding" %></p>
+  </div>
+  <% if current_person.hr_admin? || current_person.business_partner? %>
+    <div style="display:flex; gap:8px;">
+      <%= link_to edit_onboarding_trail_path(@trail), class: "btn btn-secondary" do %>
+        Editar trilha
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 360px; gap:24px; align-items:start;">
+
+  <%# === Passos === %>
+  <div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="font-size:16px; font-weight:600;">Passos da trilha</h2>
+      <span style="font-size:13px; color:var(--color-text-secondary);"><%= @steps.size %> passo(s)</span>
+    </div>
+
+    <% if @steps.empty? %>
+      <div class="card" style="padding:32px; text-align:center; color:var(--color-text-secondary);">
+        Nenhum passo adicionado ainda.
+      </div>
+    <% else %>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
+        <% @steps.each_with_index do |step, i| %>
+          <div class="card" style="padding:16px 18px; display:flex; align-items:flex-start; gap:14px;">
+            <div style="width:28px; height:28px; background:var(--color-bg-secondary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--color-text-secondary); flex-shrink:0;"><%= i + 1 %></div>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <span style="font-size:14px; font-weight:600;"><%= step.title %></span>
+                <span style="font-size:10px; font-weight:600; background:var(--color-bg-secondary); color:var(--color-text-secondary); padding:2px 7px; border-radius:20px;"><%= step.type_label %></span>
+                <% unless step.required? %>
+                  <span style="font-size:10px; color:var(--color-text-secondary); background:#f5f5f5; padding:2px 7px; border-radius:20px;">Opcional</span>
+                <% end %>
+              </div>
+              <% if step.description.present? %>
+                <p style="font-size:13px; color:var(--color-text-secondary); margin:0 0 6px; line-height:1.4;"><%= step.description %></p>
+              <% end %>
+              <% if step.content_url.present? %>
+                <a href="<%= step.content_url %>" target="_blank" rel="noopener" style="font-size:12px; color:var(--color-accent); text-decoration:none;">↗ Abrir conteúdo</a>
+              <% end %>
+            </div>
+            <% if current_person.hr_admin? || current_person.business_partner? %>
+              <div style="display:flex; gap:8px; flex-shrink:0;">
+                <button onclick="openEditStep(<%= step.id %>, <%= step.to_json.html_safe %>)" style="background:none; border:none; color:var(--color-text-secondary); cursor:pointer; font-size:12px; padding:4px 8px; border-radius:6px; border:1px solid var(--color-border);">Editar</button>
+                <%= button_to onboarding_step_path(step), method: :delete, data: { turbo_confirm: "Remover este passo?" }, style:"background:none; border:1px solid #fcd5d5; color:#c0392b; cursor:pointer; font-size:12px; padding:4px 8px; border-radius:6px; font-family:var(--font-sans);" do %>Remover<% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Adicionar passo (admin) %>
+    <% if current_person.hr_admin? || current_person.business_partner? %>
+      <div class="card" style="padding:20px;">
+        <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Adicionar passo</h3>
+        <%= form_with url: onboarding_trail_steps_path(@trail), model: [:onboarding, OnboardingStep.new] do |f| %>
+          <div style="display:grid; grid-template-columns:1fr 140px; gap:10px; margin-bottom:10px;">
+            <%= f.text_field :title, placeholder: "Título do passo", style:"padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans);" %>
+            <%= f.select :step_type, OnboardingStep.step_types.keys.map { |k| [OnboardingStep::STEP_TYPE_LABELS[k], k] }, {}, style:"padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans);" %>
+          </div>
+          <%= f.text_area :description, placeholder: "Descrição (opcional)", rows: 2, style:"padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans); resize:vertical; margin-bottom:10px;" %>
+          <%= f.url_field :content_url, placeholder: "URL do conteúdo (opcional)", style:"padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans); margin-bottom:10px;" %>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+              <%= f.check_box :required, checked: true %> Obrigatório
+            </label>
+            <%= f.submit "Adicionar passo", class: "btn btn-primary", style:"padding:8px 16px;" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# === Sidebar: Colaboradores === %>
+  <div>
+    <% if current_person.hr_admin? || current_person.business_partner? %>
+      <div class="card" style="padding:20px; margin-bottom:16px;">
+        <h3 style="font-size:14px; font-weight:600; margin-bottom:14px;">Atribuir trilha</h3>
+        <%= form_with url: onboarding_trail_assignments_path(@trail), method: :post do |f| %>
+          <% assigned_ids = @trail.assignments.pluck(:person_id) %>
+          <%= select_tag :person_id,
+                options_from_collection_for_select(Person.active.where.not(id: assigned_ids).order(:name), :id, :name),
+                prompt: "Selecionar colaborador",
+                style: "padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans); margin-bottom:10px;" %>
+          <%= f.submit "Atribuir", class: "btn btn-primary", style:"width:100%;" %>
+        <% end %>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <h3 style="font-size:14px; font-weight:600; margin-bottom:14px;">
+          Colaboradores (<%= @assignments&.size || 0 %>)
+        </h3>
+        <% if @assignments&.any? %>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <% @assignments.each do |assignment| %>
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                  <div style="font-size:13px; font-weight:500;"><%= assignment.person.name %></div>
+                  <div style="font-size:12px; color:var(--color-text-secondary);"><%= assignment.progress_percent %>% concluído</div>
+                </div>
+                <span style="font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px;
+                  background:<%= assignment.completed? ? '#e8f5e9' : assignment.in_progress? ? '#fff8e1' : '#f5f5f5' %>;
+                  color:<%= assignment.completed? ? '#2e7d32' : assignment.in_progress? ? '#f57f17' : '#757575' %>;">
+                  <%= assignment.completed? ? "Concluído" : assignment.in_progress? ? "Em progresso" : "Não iniciado" %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p style="font-size:13px; color:var(--color-text-secondary); margin:0;">Nenhum colaborador atribuído.</p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+</div>

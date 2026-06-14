@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reunião com Engenharia — Click.People</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      padding: 40px 20px;
+    }
+
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    /* Header */
+    .header {
+      background: #F25924;
+      color: white;
+      padding: 40px 48px;
+    }
+    .header-meta {
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0.85;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .header p {
+      font-size: 15px;
+      opacity: 0.9;
+    }
+
+    /* Body */
+    .content {
+      padding: 48px;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 48px;
+    }
+    .section-label {
+      display: inline-block;
+      background: #FEF0EB;
+      color: #F25924;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .section h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+    }
+
+    /* Feature list */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .feature-item {
+      background: #f9f9f9;
+      border: 1px solid #ebebeb;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .feature-item .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .feature-item .value {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    /* Done list */
+    .done-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .done-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #333;
+    }
+    .done-list li::before {
+      content: "✓";
+      color: #F25924;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Needs list */
+    .needs-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .needs-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #333;
+    }
+    .needs-item-num {
+      background: #F25924;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid #ebebeb;
+      margin: 40px 0;
+    }
+
+    /* Questions */
+    .question-group {
+      margin-bottom: 32px;
+    }
+    .question-group h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #F25924;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #FEF0EB;
+    }
+    .question-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .question-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .q-box {
+      background: #FEF0EB;
+      color: #F25924;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .q-text {
+      font-size: 14px;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+    .q-why {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    /* Privacy layers */
+    .layer-card {
+      border: 1px solid #ebebeb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .layer-card.protected {
+      border-color: #d4edda;
+      background: #f6fff8;
+    }
+    .layer-card.risk {
+      border-color: #fce8e0;
+      background: #fff9f7;
+    }
+    .layer-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .layer-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .layer-badge.ok {
+      background: #d4edda;
+      color: #1a7a35;
+    }
+    .layer-badge.attention {
+      background: #fce8e0;
+      color: #c0390e;
+    }
+    .layer-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .layer-desc {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    /* Closing phrase */
+    .closing {
+      background: #1a1a1a;
+      color: white;
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-top: 40px;
+    }
+    .closing-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #F25924;
+      margin-bottom: 12px;
+    }
+    .closing p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #e0e0e0;
+      font-style: italic;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 24px 48px;
+      border-top: 1px solid #ebebeb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-left {
+      font-size: 12px;
+      color: #999;
+    }
+    .footer-right {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* Print */
+    @media print {
+      body { background: white; padding: 0; }
+      .page { box-shadow: none; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-meta">Click.People · Reunião de Alinhamento Técnico</div>
+      <h1>O que foi construído<br>e o que precisamos do time</h1>
+      <p>Preparado por Maria Natividade · People Ops · Junho 2026</p>
+    </div>
+
+    <div class="content">
+
+      <!-- O que é -->
+      <div class="section">
+        <div class="section-label">O Produto</div>
+        <h2>O que é o Click.People</h2>
+        <p style="font-size:14px; color:#555; line-height:1.6; margin-bottom:20px;">
+          Plataforma interna de gestão de pessoas da Clicksign. Substitui planilhas e e-mails no processo de avaliação de desempenho. Construída do zero pela área de People, com auxílio de IA.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <div class="label">Linguagem</div>
+            <div class="value">Ruby on Rails 8.1</div>
+          </div>
+          <div class="feature-item">
+            <div class="label">Login</div>
+            <div class="value">Google SSO (@clicksign.com)</div>
+          </div>
+          <div class="feature-item">
+            <div class="label">Banco de dados (dev)</div>
+            <div class="value">SQLite · precisa virar PostgreSQL</div>
+          </div>
+          <div class="feature-item">
+            <div class="label">Código</div>
+            <div class="value">GitHub · branch main</div>
+          </div>
+          <div class="feature-item">
+            <div class="label">Rodando hoje</div>
+            <div class="value">localhost:3000 (minha máquina)</div>
+          </div>
+          <div class="feature-item">
+            <div class="label">Credenciais OAuth</div>
+            <div class="value">Fora do Git · variáveis de ambiente</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- O que foi feito -->
+      <div class="section">
+        <div class="section-label">Já construído</div>
+        <h2>O que já funciona hoje</h2>
+        <ul class="done-list">
+          <li>Login via Google SSO — só e-mails @clicksign.com têm acesso</li>
+          <li>Ciclo completo de avaliação 360° — rascunho → indicações → validação → avaliação → calibração → encerrado</li>
+          <li>Configuração de perguntas por ciclo (escala, texto, múltipla escolha)</li>
+          <li>Indicação de pares com validação pelo RH</li>
+          <li>Plano de avaliadores gerado automaticamente pela hierarquia (chapter + stream manager)</li>
+          <li>9-Box visual com eixos e limiares configuráveis</li>
+          <li>PDI (Plano de Desenvolvimento Individual)</li>
+          <li>Plano de Recuperação</li>
+          <li>Feedbacks entre colaboradores</li>
+          <li>Notificações in-app com badge de não lidas</li>
+          <li>Admin de colaboradores e cargos (restrito ao RH)</li>
+          <li>Controle de acesso por papel: hr_admin, business_partner, manager, employee</li>
+        </ul>
+      </div>
+
+      <hr class="divider">
+
+      <!-- O que o time precisa fazer -->
+      <div class="section">
+        <div class="section-label">Próximos passos</div>
+        <h2>O que o time de engenharia precisa fazer</h2>
+        <ul class="needs-list">
+          <li>
+            <div class="needs-item-num">1</div>
+            <div><strong>Revisão de código</strong> — o time olha o que foi construído e valida a arquitetura</div>
+          </li>
+          <li>
+            <div class="needs-item-num">2</div>
+            <div><strong>Ambiente na AWS</strong> — subir o app em um servidor (já usamos AWS na Clicksign)</div>
+          </li>
+          <li>
+            <div class="needs-item-num">3</div>
+            <div><strong>Banco em produção</strong> — migrar de SQLite para PostgreSQL (possivelmente via Supabase)</div>
+          </li>
+          <li>
+            <div class="needs-item-num">4</div>
+            <div><strong>Credenciais seguras</strong> — configurar variáveis de ambiente do Google OAuth no servidor</div>
+          </li>
+          <li>
+            <div class="needs-item-num">5</div>
+            <div><strong>Domínio interno</strong> — ex: <code>people.clicksign.com</code></div>
+          </li>
+          <li>
+            <div class="needs-item-num">6</div>
+            <div><strong>Deploy automático (CI/CD)</strong> — código no GitHub → vai pro servidor automaticamente</div>
+          </li>
+        </ul>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Perguntas -->
+      <div class="section">
+        <div class="section-label">Perguntas</div>
+        <h2>O que preciso tirar dessa reunião</h2>
+
+        <div class="question-group">
+          <h3>Infraestrutura e hospedagem</h3>
+          <ul class="question-list">
+            <li>
+              <span class="q-box">Q1</span>
+              <div>
+                <div class="q-text">"Como a Clicksign prefere subir um app Rails na AWS? Usamos EC2, ECS, Elastic Beanstalk ou algo mais simples como Render/Heroku?"</div>
+                <div class="q-why">Preciso saber onde e como vai rodar para planejar o deploy.</div>
+              </div>
+            </li>
+            <li>
+              <span class="q-box">Q2</span>
+              <div>
+                <div class="q-text">"Quem vai ser o responsável técnico por subir e manter o ambiente de produção?"</div>
+                <div class="q-why">Preciso de um ponto de contato técnico no time.</div>
+              </div>
+            </li>
+            <li>
+              <span class="q-box">Q3</span>
+              <div>
+                <div class="q-text">"Tem estimativa de quanto tempo leva para ter o app no ar após a revisão do código?"</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="question-group">
+          <h3>Supabase</h3>
+          <p style="font-size:13px; color:#555; margin-bottom:14px; line-height:1.5;">
+            <strong>O que é o Supabase:</strong> é onde os dados vão ficar em produção. Funciona como um banco de dados PostgreSQL com painel visual — dá pra ver todas as avaliações, dados de colaboradores e resultados direto lá, sem passar pela interface do sistema. Por isso o acesso precisa ser controlado.
+          </p>
+          <ul class="question-list">
+            <li>
+              <span class="q-box">Q4</span>
+              <div>
+                <div class="q-text">"Já temos uma conta Supabase na Clicksign? Posso criar um projeto separado, exclusivo para o Click.People?"</div>
+                <div class="q-why">Dados de RH precisam estar isolados de outros sistemas.</div>
+              </div>
+            </li>
+            <li>
+              <span class="q-box">Q5</span>
+              <div>
+                <div class="q-text">"Para fazer o deploy, o time de engenharia precisa ter acesso direto ao banco, ou só a string de conexão é suficiente?"</div>
+                <div class="q-why">Quero que o time configure sem ver os dados.</div>
+              </div>
+            </li>
+            <li>
+              <span class="q-box">Q6</span>
+              <div>
+                <div class="q-text">"Posso ser a administradora do projeto no Supabase, com acesso restrito só para mim e mais uma pessoa do RH?"</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="question-group">
+          <h3>Privacidade e acesso aos dados</h3>
+          <p style="font-size:13px; color:#555; margin-bottom:14px; line-height:1.5;">
+            <strong>Contexto:</strong> avaliações de desempenho são dados sensíveis de RH. Ninguém fora do RH pode ter acesso — nem por meio do banco de dados, nem pela AWS. Isso não é desconfiança do time, é compliance e boa governança.
+          </p>
+          <ul class="question-list">
+            <li>
+              <span class="q-box">Q7</span>
+              <div>
+                <div class="q-text">"Quem na Clicksign vai ter acesso ao ambiente AWS onde o Click.People vai rodar?"</div>
+                <div class="q-why">Quem acessa o servidor pode acessar os dados.</div>
+              </div>
+            </li>
+            <li>
+              <span class="q-box">Q8</span>
+              <div>
+                <div class="q-text">"Tem como registrar (logar) quem acessa o ambiente e o banco de dados, e quando? Precisamos de auditoria para dados de RH."</div>
+              </div>
+            </li>
+            <li>
+              <span class="q-box">Q9</span>
+              <div>
+                <div class="q-text">"Podemos combinar que o time de engenharia tem acesso para deploy e manutenção, mas sem permissão para ler os dados das avaliações?"</div>
+                <div class="q-why">É tecnicamente possível separar acesso à infra de acesso aos dados.</div>
+              </div>
+            </li>
+            <li>
+              <span class="q-box">Q10</span>
+              <div>
+                <div class="q-text">"Existe algum processo de segurança ou aprovação para sistemas internos que lidam com dados de colaboradores?"</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="question-group">
+          <h3>Processo de trabalho</h3>
+          <ul class="question-list">
+            <li>
+              <span class="q-box">Q11</span>
+              <div>
+                <div class="q-text">"Como vai funcionar a colaboração? Eu continuo desenvolvendo features e abro Pull Requests no GitHub para o time revisar antes de subir?"</div>
+              </div>
+            </li>
+            <li>
+              <span class="q-box">Q12</span>
+              <div>
+                <div class="q-text">"Tem algum padrão de testes ou documentação que o time exige antes de aceitar código em produção?"</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Camadas de privacidade -->
+      <div class="section">
+        <div class="section-label">Privacidade</div>
+        <h2>As três camadas de acesso aos dados</h2>
+
+        <div class="layer-card protected">
+          <div class="layer-header">
+            <span class="layer-badge ok">Já protegido</span>
+            <span class="layer-title">Camada 1 — Interface do sistema</span>
+          </div>
+          <div class="layer-desc">Cada papel vê só o que pode ver. Colaborador não vê avaliação do colega. RH vê tudo. Isso já está construído no código.</div>
+        </div>
+
+        <div class="layer-card risk">
+          <div class="layer-header">
+            <span class="layer-badge attention">Precisa definir</span>
+            <span class="layer-title">Camada 2 — Banco de dados (Supabase)</span>
+          </div>
+          <div class="layer-desc">Quem tem acesso ao Supabase vê todos os dados brutos, sem passar pela interface. Precisa restringir o acesso ao painel a apenas o RH.</div>
+        </div>
+
+        <div class="layer-card risk">
+          <div class="layer-header">
+            <span class="layer-badge attention">Precisa definir</span>
+            <span class="layer-title">Camada 3 — Infraestrutura (AWS)</span>
+          </div>
+          <div class="layer-desc">Quem tem acesso ao servidor na AWS pode acessar tudo. Precisa acordar quem terá esse acesso e garantir registro de auditoria.</div>
+        </div>
+      </div>
+
+      <!-- Closing -->
+      <div class="closing">
+        <div class="closing-label">Frase para abrir a reunião</div>
+        <p>"Eu construí uma plataforma funcional de gestão de desempenho usando IA. Agora quero fazer isso de forma profissional com o suporte do time. Precisamos alinhar onde hospedar na AWS, como usar o Supabase e, principalmente, como garantir que dados de avaliação sejam acessíveis só para o RH — tanto na interface quanto no banco."</p>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-left">Click.People · People Ops · Clicksign</div>
+      <div class="footer-right">Junho 2026</div>
+    </div>
+
+  </div>
+</body>
+</html>

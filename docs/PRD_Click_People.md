@@ -8,7 +8,7 @@
 
 ## 1. Visão Geral
 
-Click.People é a plataforma interna de gestão de desempenho e desenvolvimento de pessoas da Clicksign. Substitui processos manuais em planilhas e ferramentas genéricas por um sistema integrado, construído sobre a realidade organizacional da Clicksign: estrutura de chapters e streams, squads, avaliação 360°, calibração e 9-Box.
+Click.People é a plataforma interna de gestão de desempenho e desenvolvimento de pessoas da Clicksign. Substitui processos manuais em planilhas e ferramentas genéricas por um sistema integrado, construído sobre a realidade organizacional da Clicksign: estrutura de chapters e value streams, squads, avaliação 360°, calibração e 9-Box.
 
 **Princípio central:** toda decisão sobre pessoas — avaliação, desenvolvimento, promoção — deve ser baseada em dados estruturados, contextualizados pela hierarquia real da organização, e acessível às pessoas certas no momento certo.
 

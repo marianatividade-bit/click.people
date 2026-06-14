@@ -1,0 +1,148 @@
+<% content_for :active_nav, "evaluations" %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Meu Resultado</h1>
+    <p class="page-subtitle"><%= @cycle.name %></p>
+  </div>
+</div>
+
+<%# === Score Cards === %>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:32px;">
+  <div class="card" style="text-align:center; padding:28px 20px;">
+    <div style="font-size:11px; font-weight:600; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">Performance</div>
+    <div style="font-size:48px; font-weight:700; color:var(--color-accent); line-height:1;">
+      <%= @result.performance_score&.round(1) || "—" %>
+    </div>
+    <div style="font-size:12px; color:var(--color-text-secondary); margin-top:4px;">de 10</div>
+  </div>
+
+  <div class="card" style="text-align:center; padding:28px 20px;">
+    <div style="font-size:11px; font-weight:600; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">Potencial</div>
+    <div style="font-size:48px; font-weight:700; color:var(--color-accent); line-height:1;">
+      <%= @result.potential_score&.round(1) || "—" %>
+    </div>
+    <div style="font-size:12px; color:var(--color-text-secondary); margin-top:4px;">de 10</div>
+  </div>
+
+  <div class="card" style="text-align:center; padding:28px 20px;">
+    <div style="font-size:11px; font-weight:600; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">9-Box</div>
+    <% pos = @result.nine_box_position %>
+    <% label = @cycle.nine_box_config.dig("quadrants", pos.to_s, "label") if pos %>
+    <div style="font-size:28px; font-weight:700; color:#1a1a1a; line-height:1; margin-top:4px;">
+      <%= label || (pos ? "Posição #{pos}" : "—") %>
+    </div>
+    <div style="font-size:12px; color:var(--color-text-secondary); margin-top:8px;">
+      <%= @result.is_calibrated? ? "Calibrado" : "Pré-calibração" %>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:32px;">
+
+  <%# === Radar Chart === %>
+  <div class="card" style="padding:28px;">
+    <h2 style="font-size:15px; font-weight:600; margin-bottom:20px;">Desempenho por dimensão</h2>
+    <% if @dimension_scores.any? %>
+      <canvas id="radarChart" style="max-height:300px;"></canvas>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+      <script>
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: <%= raw @dimension_scores.keys.to_json %>,
+            datasets: [{
+              label: 'Sua média',
+              data: <%= raw @dimension_scores.values.to_json %>,
+              backgroundColor: 'rgba(242,89,36,0.12)',
+              borderColor: '#F25924',
+              borderWidth: 2,
+              pointBackgroundColor: '#F25924',
+              pointRadius: 4
+            }]
+          },
+          options: {
+            scales: {
+              r: {
+                beginAtZero: true,
+                max: 10,
+                ticks: { stepSize: 2, font: { size: 11 } },
+                pointLabels: { font: { size: 12, family: 'DM Sans' } }
+              }
+            },
+            plugins: { legend: { display: false } },
+            elements: { line: { tension: 0.1 } }
+          }
+        });
+      </script>
+    <% else %>
+      <p style="color:var(--color-text-secondary); font-size:14px;">Nenhuma dimensão com dados disponíveis.</p>
+    <% end %>
+  </div>
+
+  <%# === 9-Box Grid === %>
+  <div class="card" style="padding:28px;">
+    <h2 style="font-size:15px; font-weight:600; margin-bottom:20px;">Posição no 9-Box</h2>
+    <% nine_box_config = @cycle.nine_box_config %>
+    <% current_pos = @result.nine_box_position %>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:4px;">
+      <% [7,8,9,4,5,6,1,2,3].each do |pos| %>
+        <% quad = nine_box_config.dig("quadrants", pos.to_s) %>
+        <% is_current = pos == current_pos %>
+        <div style="
+          aspect-ratio:1;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          border-radius:8px;
+          font-size:11px;
+          font-weight:<%= is_current ? '700' : '500' %>;
+          text-align:center;
+          padding:6px;
+          background:<%= is_current ? '#F25924' : 'var(--color-bg-secondary)' %>;
+          color:<%= is_current ? '#fff' : 'var(--color-text-secondary)' %>;
+          border: <%= is_current ? '2px solid #F25924' : '1px solid var(--color-border)' %>;
+          line-height:1.2;">
+          <%= quad&.dig("label") || pos %>
+        </div>
+      <% end %>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:11px; color:var(--color-text-secondary);">
+      <span>← Performance baixa</span>
+      <span>Performance alta →</span>
+    </div>
+  </div>
+</div>
+
+<%# === Comentários Anônimos === %>
+<% if @comments.any? %>
+  <div class="card" style="padding:28px; margin-bottom:32px;">
+    <h2 style="font-size:15px; font-weight:600; margin-bottom:20px;">Comentários dos avaliadores</h2>
+    <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:20px;">
+      Os autores dos comentários são anônimos. Autoavaliação não é incluída.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <% @comments.each_with_index do |(comment, eval_type), i| %>
+        <div style="background:var(--color-bg-secondary); border-radius:10px; padding:16px 18px; border-left:3px solid var(--color-accent);">
+          <p style="font-size:14px; color:#1a1a1a; line-height:1.6; margin:0;"><%= comment %></p>
+          <p style="font-size:11px; color:var(--color-text-secondary); margin-top:8px; margin-bottom:0;">
+            <%= eval_type == "chapter_manager" ? "Gestor de Chapter" :
+                eval_type == "stream_manager"  ? "Gestor de Stream" :
+                eval_type == "direct_report"   ? "Liderado" : "Par" %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<%# === Ações === %>
+<div style="display:flex; gap:12px;">
+  <%= link_to cycles_path, class: "btn btn-secondary" do %>
+    ← Voltar aos ciclos
+  <% end %>
+  <%= link_to new_pdi_path(cycle_id: @cycle.id), class: "btn btn-primary" do %>
+    Criar PDI a partir deste resultado
+  <% end %>
+</div>

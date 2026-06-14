@@ -1,5 +1,5 @@
 class CyclesController < ApplicationController
-  before_action :set_cycle, only: [:show, :update, :configure, :update_configure, :advance, :progress, :destroy, :duplicate]
+  before_action :set_cycle, only: [:show, :update, :configure, :update_configure, :advance, :progress, :destroy, :duplicate, :my_result]
 
   def index
     @cycles = Cycle.order(created_at: :desc)
@@ -104,6 +104,31 @@ class CyclesController < ApplicationController
     else
       redirect_to @cycle, alert: "Ciclo já está encerrado."
     end
+  end
+
+  def my_result
+    @result = @cycle.cycle_results.find_by(person: current_person)
+    unless @result
+      return redirect_to @cycle, alert: "Seu resultado ainda não está disponível."
+    end
+
+    # Aggregate dimension scores from answers
+    @dimension_scores = {}
+    evaluations = @cycle.evaluations.where(evaluated: current_person, status: :completed)
+                        .where.not(evaluation_type: :self_eval)
+    evaluations.each do |eval|
+      eval.answers.includes(:question).each do |answer|
+        next unless answer.numeric_value && answer.question.dimension.present?
+        dim = answer.question.dimension
+        @dimension_scores[dim] ||= []
+        @dimension_scores[dim] << answer.numeric_value.to_f
+      end
+    end
+    @dimension_scores = @dimension_scores.transform_values { |vals| (vals.sum / vals.size).round(1) }
+
+    # Anonymous comments (exclude self_eval, hide evaluator identity)
+    @comments = evaluations.where.not(overall_comment: [nil, ""])
+                           .pluck(:overall_comment, :evaluation_type)
   end
 
   def progress

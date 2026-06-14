@@ -11,7 +11,26 @@
       "Bash(bundle exec *)",
       "PowerShell($env:PATH = \"C:\\\\Ruby33-x64\\\\bin;\" + $env:PATH; Set-Location \"C:\\\\Users\\\\maria.natividade\\\\click.people\"; $output = bundle exec rails db:migrate 2>&1; Write-Output $output)",
       "mcp__Claude_in_Chrome__tabs_context_mcp",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit -m 'fix: GET /logout redirects to /login; disable Turbo on logout button *)",
+      "Bash(git push *)",
+      "Bash(gh pr create --title 'feat: Gestão de Desempenho, PDI, Feedbacks, Notificações e mais 7 features' --body ' *)",
+      "PowerShell(Get-Command gh -ErrorAction SilentlyContinue; where.exe gh 2>$null; \\(Get-ChildItem \"C:\\\\Program Files\\\\GitHub CLI\\\\\" -ErrorAction SilentlyContinue\\))",
+      "Bash(git commit -m 'feat: sidebar Gestão de Desempenho como flyout no hover *)",
+      "Bash(git commit -m 'refactor: remove Ciclos e 9-Box do nav principal; ciclos entra em Avaliação de desempenho *)",
+      "Bash(find \"/mnt/c/Users/maria.natividade/.claude/skills\" -name \"*.md\" 2>/dev/null | head -20)",
+      "Bash(C:\\\\Ruby33-x64\\\\bin\\\\bundle.bat exec *)",
+      "PowerShell(cd \"C:\\\\Users\\\\maria.natividade\\\\click.people\"; $env:PATH = \"C:\\\\Ruby33-x64\\\\bin;$env:PATH\"; bundle exec rails db:migrate 2>&1)",
+      "mcp__3ede2578-a112-4e3a-89cc-3c1815c2a792__search_files",
+      "mcp__3ede2578-a112-4e3a-89cc-3c1815c2a792__download_file_content",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\maria.natividade\\\\click.people\" -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(\"C:\\\\Ruby33-x64\\\\bin\\\\bundle.bat\" exec *)"
     ]
   }
 }

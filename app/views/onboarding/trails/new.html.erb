@@ -1,0 +1,35 @@
+<% content_for :active_nav, "onboarding_trails" %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Nova trilha</h1>
+    <p class="page-subtitle">Crie uma trilha de onboarding para novos colaboradores</p>
+  </div>
+</div>
+
+<div style="max-width:640px;">
+  <div class="card" style="padding:28px;">
+    <%= form_with model: [:onboarding, @trail] do |f| %>
+      <% if @trail.errors.any? %>
+        <div style="background:#fce8e0; border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:14px; color:#c0390e;">
+          <%= @trail.errors.full_messages.to_sentence %>
+        </div>
+      <% end %>
+
+      <div style="margin-bottom:16px;">
+        <%= f.label :name, "Nome da trilha", style:"display:block; font-size:13px; font-weight:600; margin-bottom:6px;" %>
+        <%= f.text_field :name, placeholder: "Ex: Onboarding Engenharia", style:"padding:10px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans);" %>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <%= f.label :description, "Descrição", style:"display:block; font-size:13px; font-weight:600; margin-bottom:6px;" %>
+        <%= f.text_area :description, placeholder: "Descreva o objetivo desta trilha", rows: 3, style:"padding:10px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans); resize:vertical;" %>
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <%= link_to "Cancelar", onboarding_trails_path, class: "btn btn-secondary" %>
+        <%= f.submit "Criar trilha", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,108 @@
+<% content_for :active_nav, "onboarding_evaluations" %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Avaliação de Experiência</h1>
+    <p class="page-subtitle">Avaliações de 20 dias, 70 dias e feedback de encerramento</p>
+  </div>
+  <% if current_person.hr_admin? || current_person.business_partner? %>
+    <button onclick="document.getElementById('new-eval-modal').style.display='flex'" class="btn btn-primary">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nova avaliação
+    </button>
+  <% end %>
+</div>
+
+<%# Avaliações para o colaborador responder %>
+<% if @to_fill.any? %>
+  <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:12px; padding:16px 20px; margin-bottom:24px; display:flex; align-items:center; gap:12px;">
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#f57f17" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>
+      <strong style="font-size:14px;">Você tem <%= @to_fill.size %> avaliação(ões) pendente(s) para preencher.</strong>
+      <p style="font-size:13px; margin:2px 0 0; color:#666;">Clique em cada avaliação para responder.</p>
+    </div>
+  </div>
+<% end %>
+
+<%# === Grid de avaliações === %>
+<% if @evaluations.empty? %>
+  <div class="empty-state">
+    <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--color-accent)" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    <h3>Nenhuma avaliação ainda</h3>
+    <p>As avaliações de 20 e 70 dias aparecerão aqui quando criadas pelo RH.</p>
+  </div>
+<% else %>
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <% @evaluations.each do |eval| %>
+      <div class="card" style="padding:20px; display:flex; align-items:center; gap:16px;">
+        <div style="width:44px; height:44px; border-radius:50%; background:<%= eval.days_20? ? '#e3f2fd' : '#fce4ec' %>; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span style="font-size:13px; font-weight:700; color:<%= eval.days_20? ? '#1565c0' : '#c62828' %>;"><%= eval.days_20? ? "20d" : "70d" %></span>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:2px;">
+            <span style="font-size:14px; font-weight:600;"><%= eval.person.name %></span>
+            <span style="font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px;
+              background:<%= eval.completed? ? '#e8f5e9' : eval.in_progress? ? '#fff8e1' : '#f5f5f5' %>;
+              color:<%= eval.completed? ? '#2e7d32' : eval.in_progress? ? '#f57f17' : '#757575' %>;">
+              <%= eval.completed? ? "Concluída" : eval.in_progress? ? "Em andamento" : "Pendente" %>
+            </span>
+          </div>
+          <div style="font-size:12px; color:var(--color-text-secondary);">
+            <%= eval.type_label %> ·
+            <% if eval.evaluator %>Líder: <%= eval.evaluator.name %><% else %>Líder não atribuído<% end %>
+            <% if eval.due_date %> · Prazo: <%= l(eval.due_date, format: :short) %><% end %>
+          </div>
+          <div style="display:flex; gap:12px; margin-top:8px; font-size:12px; color:var(--color-text-secondary);">
+            <span><%= eval.collaborator_complete? ? "✓" : "○" %> Colaborador</span>
+            <span><%= eval.leader_complete? ? "✓" : "○" %> Líder</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-shrink:0;">
+          <%= link_to "Ver", onboarding_evaluation_path(eval), class: "btn btn-secondary", style:"padding:6px 14px; font-size:13px;" %>
+          <% if (eval.person == current_person || eval.evaluator == current_person) && !eval.completed? %>
+            <%= link_to "Responder", edit_onboarding_evaluation_path(eval), class: "btn btn-primary", style:"padding:6px 14px; font-size:13px;" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<%# === Modal nova avaliação (admin) === %>
+<% if current_person.hr_admin? || current_person.business_partner? %>
+  <div id="new-eval-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:16px; padding:28px; width:480px; max-width:90vw;">
+      <h2 style="font-size:17px; font-weight:700; margin-bottom:20px;">Nova avaliação de experiência</h2>
+      <%= form_with url: onboarding_evaluations_path, method: :post do |f| %>
+        <div style="margin-bottom:14px;">
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">Colaborador</label>
+          <%= select_tag "experience_evaluation[person_id]",
+                options_from_collection_for_select(Person.active.order(:name), :id, :name),
+                prompt: "Selecionar colaborador",
+                style: "padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans);" %>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">Tipo de avaliação</label>
+          <%= select_tag "experience_evaluation[evaluation_type]",
+                options_for_select([["Avaliação 20 dias", "days_20"], ["Avaliação 70 dias", "days_70"]]),
+                style: "padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans);" %>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">Líder responsável</label>
+          <%= select_tag "experience_evaluation[evaluator_id]",
+                options_from_collection_for_select(Person.active.where(role: [:manager, :hr_admin, :business_partner]).order(:name), :id, :name),
+                prompt: "Selecionar líder",
+                style: "padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans);" %>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">Prazo</label>
+          <%= date_field_tag "experience_evaluation[due_date]", nil, style:"padding:8px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans);" %>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" onclick="document.getElementById('new-eval-modal').style.display='none'" class="btn btn-secondary">Cancelar</button>
+          <%= f.submit "Criar avaliação", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

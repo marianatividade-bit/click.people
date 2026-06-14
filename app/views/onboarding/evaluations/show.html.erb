@@ -1,0 +1,92 @@
+<% content_for :active_nav, "onboarding_evaluations" %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><%= @evaluation.type_label %> — <%= @evaluation.person.name %></h1>
+    <p class="page-subtitle">
+      <% if @evaluation.evaluator %>Líder: <%= @evaluation.evaluator.name %><% end %>
+      <% if @evaluation.due_date %> · Prazo: <%= l(@evaluation.due_date, format: :long) %><% end %>
+    </p>
+  </div>
+  <% unless @evaluation.completed? %>
+    <%= link_to "Responder avaliação", edit_onboarding_evaluation_path(@evaluation), class: "btn btn-primary" %>
+  <% end %>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+
+  <%# === Respostas do Colaborador === %>
+  <div class="card" style="padding:24px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+      <h2 style="font-size:15px; font-weight:600;">Colaborador</h2>
+      <span style="font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px;
+        background:<%= @evaluation.collaborator_complete? ? '#e8f5e9' : '#f5f5f5' %>;
+        color:<%= @evaluation.collaborator_complete? ? '#2e7d32' : '#757575' %>;">
+        <%= @evaluation.collaborator_complete? ? "Respondido" : "Pendente" %>
+      </span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <% @evaluation.questions.each do |q| %>
+        <div>
+          <p style="font-size:13px; font-weight:600; color:var(--color-text-secondary); margin:0 0 4px;"><%= q[:label] %></p>
+          <% answer = @evaluation.collaborator_answers[q[:key]] %>
+          <% if answer.present? %>
+            <% if q[:type] == "scale" %>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width:<%= answer.to_i * 20 %>%; height:6px; background:var(--color-accent); border-radius:3px; max-width:100%;"></div>
+                <span style="font-size:14px; font-weight:600;"><%= answer %>/5</span>
+              </div>
+            <% else %>
+              <p style="font-size:14px; color:#1a1a1a; margin:0; line-height:1.5;"><%= answer %></p>
+            <% end %>
+          <% else %>
+            <p style="font-size:13px; color:var(--color-text-secondary); margin:0; font-style:italic;">Não respondido</p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# === Respostas do Líder === %>
+  <div class="card" style="padding:24px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+      <h2 style="font-size:15px; font-weight:600;">Líder</h2>
+      <span style="font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px;
+        background:<%= @evaluation.leader_complete? ? '#e8f5e9' : '#f5f5f5' %>;
+        color:<%= @evaluation.leader_complete? ? '#2e7d32' : '#757575' %>;">
+        <%= @evaluation.leader_complete? ? "Respondido" : "Pendente" %>
+      </span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <% @evaluation.questions.each do |q| %>
+        <div>
+          <p style="font-size:13px; font-weight:600; color:var(--color-text-secondary); margin:0 0 4px;"><%= q[:label] %></p>
+          <% answer = @evaluation.leader_answers[q[:key]] %>
+          <% if answer.present? %>
+            <% if q[:type] == "scale" %>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width:<%= answer.to_i * 20 %>%; height:6px; background:var(--color-accent); border-radius:3px; max-width:100%;"></div>
+                <span style="font-size:14px; font-weight:600;"><%= answer %>/5</span>
+              </div>
+            <% else %>
+              <p style="font-size:14px; color:#1a1a1a; margin:0; line-height:1.5;"><%= answer %></p>
+            <% end %>
+          <% else %>
+            <p style="font-size:13px; color:var(--color-text-secondary); margin:0; font-style:italic;">Não respondido</p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+</div>
+
+<% if current_person.hr_admin? || current_person.business_partner? %>
+  <div class="card" style="padding:20px; margin-top:24px;">
+    <h3 style="font-size:14px; font-weight:600; margin-bottom:12px;">Observações do RH</h3>
+    <%= form_with url: onboarding_evaluation_path(@evaluation), method: :patch do |f| %>
+      <%= text_area_tag "experience_evaluation[rh_notes]", @evaluation.rh_notes, placeholder: "Pontos de atenção, encaminhamentos...", rows: 3, style:"padding:10px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans); resize:vertical; margin-bottom:10px;" %>
+      <%= f.submit "Salvar observações", class: "btn btn-secondary" %>
+    <% end %>
+  </div>
+<% end %>

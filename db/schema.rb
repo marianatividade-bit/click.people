@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_203335) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_14_210001) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -163,6 +163,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_203335) do
     t.index ["status"], name: "index_evaluations_on_status"
   end
 
+  create_table "experience_evaluations", force: :cascade do |t|
+    t.json "collaborator_answers", default: {}
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.date "due_date"
+    t.integer "evaluation_type", default: 0, null: false
+    t.integer "evaluator_id"
+    t.json "leader_answers", default: {}
+    t.integer "person_id", null: false
+    t.text "rh_notes"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_id", "evaluation_type"], name: "index_experience_evaluations_on_person_id_and_evaluation_type", unique: true
+    t.index ["status"], name: "index_experience_evaluations_on_status"
+  end
+
+  create_table "experience_feedbacks", force: :cascade do |t|
+    t.string "calendar_event_id"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "leader_id", null: false
+    t.datetime "meeting_at"
+    t.integer "person_id", null: false
+    t.text "private_notes"
+    t.text "public_notes"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_id"], name: "index_experience_feedbacks_on_person_id", unique: true
+  end
+
   create_table "feedbacks", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "cycle_id"
@@ -201,6 +231,49 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_203335) do
     t.datetime "updated_at", null: false
     t.index ["person_id", "read_at"], name: "index_notifications_on_person_id_and_read_at"
     t.index ["person_id"], name: "index_notifications_on_person_id"
+  end
+
+  create_table "onboarding_assignments", force: :cascade do |t|
+    t.integer "assigned_by_id"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "person_id", null: false
+    t.datetime "started_at"
+    t.integer "status", default: 0, null: false
+    t.integer "trail_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_id", "trail_id"], name: "index_onboarding_assignments_on_person_id_and_trail_id", unique: true
+  end
+
+  create_table "onboarding_step_completions", force: :cascade do |t|
+    t.integer "assignment_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "step_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assignment_id", "step_id"], name: "index_onboarding_step_completions_on_assignment_id_and_step_id", unique: true
+  end
+
+  create_table "onboarding_steps", force: :cascade do |t|
+    t.string "content_url"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.boolean "required", default: true, null: false
+    t.integer "step_type", default: 0, null: false
+    t.string "title", null: false
+    t.integer "trail_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trail_id"], name: "index_onboarding_steps_on_trail_id"
+  end
+
+  create_table "onboarding_trails", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "created_by_id"
+    t.text "description"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "pdis", force: :cascade do |t|
@@ -306,11 +379,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_203335) do
   add_foreign_key "evaluations", "cycles"
   add_foreign_key "evaluations", "people", column: "evaluated_id"
   add_foreign_key "evaluations", "people", column: "evaluator_id"
+  add_foreign_key "experience_evaluations", "people"
+  add_foreign_key "experience_evaluations", "people", column: "evaluator_id"
+  add_foreign_key "experience_feedbacks", "people"
+  add_foreign_key "experience_feedbacks", "people", column: "leader_id"
   add_foreign_key "feedbacks", "cycles"
   add_foreign_key "feedbacks", "people", column: "giver_id"
   add_foreign_key "feedbacks", "people", column: "receiver_id"
   add_foreign_key "nominations", "cycles"
   add_foreign_key "notifications", "people"
+  add_foreign_key "onboarding_assignments", "onboarding_trails", column: "trail_id"
+  add_foreign_key "onboarding_assignments", "people"
+  add_foreign_key "onboarding_step_completions", "onboarding_assignments", column: "assignment_id"
+  add_foreign_key "onboarding_step_completions", "onboarding_steps", column: "step_id"
+  add_foreign_key "onboarding_steps", "onboarding_trails", column: "trail_id"
   add_foreign_key "pdis", "cycles"
   add_foreign_key "pdis", "people"
   add_foreign_key "people", "people", column: "chapter_manager_id"

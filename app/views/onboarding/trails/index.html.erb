@@ -1,0 +1,124 @@
+<% content_for :active_nav, "onboarding_trails" %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Primeiros 15 dias</h1>
+    <p class="page-subtitle">Trilhas de integração com vídeos, tarefas e marcos</p>
+  </div>
+  <% if current_person.hr_admin? || current_person.business_partner? %>
+    <%= link_to new_onboarding_trail_path, class: "btn btn-primary" do %>
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nova trilha
+    <% end %>
+  <% end %>
+</div>
+
+<% if current_person.hr_admin? || current_person.business_partner? %>
+  <%# === Admin: lista de trilhas === %>
+  <% if @trails.empty? %>
+    <div class="empty-state">
+      <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--color-accent)" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <h3>Nenhuma trilha criada</h3>
+      <p>Crie a primeira trilha de onboarding com vídeos e tarefas para novos colaboradores.</p>
+      <%= link_to "Criar trilha", new_onboarding_trail_path, class: "btn btn-primary" %>
+    </div>
+  <% else %>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:16px;">
+      <% @trails.each do |trail| %>
+        <div class="card" style="padding:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+            <div>
+              <h3 style="font-size:15px; font-weight:600; margin-bottom:4px;"><%= trail.name %></h3>
+              <p style="font-size:13px; color:var(--color-text-secondary);"><%= pluralize(trail.steps.size, "passo") %></p>
+            </div>
+            <span style="background:<%= trail.active? ? '#e8f5e9' : '#f5f5f5' %>; color:<%= trail.active? ? '#2e7d32' : '#757575' %>; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px;">
+              <%= trail.active? ? "Ativa" : "Inativa" %>
+            </span>
+          </div>
+          <% if trail.description.present? %>
+            <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:16px; line-height:1.5;"><%= trail.description.truncate(100) %></p>
+          <% end %>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--color-border); padding-top:12px;">
+            <span style="font-size:12px; color:var(--color-text-secondary);"><%= pluralize(trail.assignments.size, "colaborador") %> na trilha</span>
+            <%= link_to "Ver trilha →", onboarding_trail_path(trail), style:"font-size:13px; color:var(--color-accent); font-weight:600; text-decoration:none;" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+<% else %>
+  <%# === Colaborador: minha trilha === %>
+  <% if @assignment %>
+    <% trail = @assignment.trail %>
+    <div class="card" style="padding:28px; margin-bottom:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+          <h2 style="font-size:18px; font-weight:700; margin-bottom:4px;"><%= trail.name %></h2>
+          <p style="font-size:13px; color:var(--color-text-secondary);"><%= trail.description %></p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:32px; font-weight:700; color:var(--color-accent);"><%= @assignment.progress_percent %>%</div>
+          <div style="font-size:12px; color:var(--color-text-secondary);">concluído</div>
+        </div>
+      </div>
+      <div style="background:var(--color-bg-secondary); border-radius:4px; height:8px; margin-bottom:24px; overflow:hidden;">
+        <div style="background:var(--color-accent); height:100%; width:<%= @assignment.progress_percent %>%; border-radius:4px; transition:width .3s;"></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <% trail.steps.each do |step| %>
+          <% completed = @assignment.step_completed?(step) %>
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:14px 16px; border:1px solid <%= completed ? '#c8e6c9' : 'var(--color-border)' %>; border-radius:10px; background:<%= completed ? '#f1f8f2' : '#fff' %>;">
+            <button
+              data-assignment-id="<%= @assignment.id %>"
+              data-step-id="<%= step.id %>"
+              data-complete-url="<%= complete_step_onboarding_trail_assignment_path(trail, @assignment) %>"
+              onclick="toggleStep(this)"
+              style="width:22px; height:22px; border-radius:50%; border:2px solid <%= completed ? '#43a047' : 'var(--color-border)' %>; background:<%= completed ? '#43a047' : 'transparent' %>; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:0;">
+              <% if completed %>
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <% end %>
+            </button>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <span style="font-size:14px; font-weight:<%= completed ? '400' : '500' %>; color:<%= completed ? 'var(--color-text-secondary)' : '#1a1a1a' %>; text-decoration:<%= completed ? 'line-through' : 'none' %>;"><%= step.title %></span>
+                <span style="font-size:10px; font-weight:600; background:var(--color-bg-secondary); color:var(--color-text-secondary); padding:2px 7px; border-radius:20px;"><%= step.type_label %></span>
+              </div>
+              <% if step.description.present? %>
+                <p style="font-size:13px; color:var(--color-text-secondary); margin:0; line-height:1.4;"><%= step.description %></p>
+              <% end %>
+              <% if step.content_url.present? %>
+                <%= link_to step.content_url, target: "_blank", rel: "noopener", style:"font-size:13px; color:var(--color-accent); font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-top:6px;" do %>
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Abrir <%= step.step_type == "video" ? "vídeo" : "conteúdo" %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="var(--color-accent)" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <h3>Nenhuma trilha atribuída</h3>
+      <p>Seu RH ainda não atribuiu uma trilha de onboarding para você.</p>
+    </div>
+  <% end %>
+<% end %>
+
+<script>
+function toggleStep(btn) {
+  const assignmentId = btn.dataset.assignmentId;
+  const stepId = btn.dataset.stepId;
+  const url = btn.dataset.completeUrl;
+
+  fetch(url, {
+    method: 'PATCH',
+    headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ step_id: stepId })
+  }).then(r => r.json()).then(data => {
+    location.reload();
+  });
+}
+</script>

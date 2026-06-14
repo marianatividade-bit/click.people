@@ -1,0 +1,60 @@
+<% content_for :active_nav, "onboarding_evaluations" %>
+
+<% is_leader = @evaluation.evaluator == current_person %>
+<% answers_key = is_leader ? :leader_answers : :collaborator_answers %>
+<% saved_answers = is_leader ? @evaluation.leader_answers : @evaluation.collaborator_answers %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><%= @evaluation.type_label %></h1>
+    <p class="page-subtitle">
+      <%= is_leader ? "Você está avaliando: #{@evaluation.person.name}" : "Sua autoavaliação" %>
+    </p>
+  </div>
+</div>
+
+<div style="max-width:680px;">
+  <div class="card" style="padding:28px;">
+    <p style="font-size:14px; color:var(--color-text-secondary); margin-bottom:24px; line-height:1.5;">
+      <% if is_leader %>
+        Responda as perguntas abaixo sobre o desenvolvimento de <strong><%= @evaluation.person.name %></strong> neste período.
+      <% else %>
+        Responda honestamente. Suas respostas ajudam o RH e seu líder a entenderem sua experiência de integração.
+      <% end %>
+    </p>
+
+    <%= form_with url: onboarding_evaluation_path(@evaluation), method: :patch do |f| %>
+      <div style="display:flex; flex-direction:column; gap:24px;">
+        <% @evaluation.questions.each do |q| %>
+          <div style="border-bottom:1px solid var(--color-border); padding-bottom:20px;">
+            <label style="display:block; font-size:14px; font-weight:600; margin-bottom:12px; line-height:1.4;">
+              <%= q[:label] %>
+            </label>
+            <% if q[:type] == "scale" %>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <span style="font-size:12px; color:var(--color-text-secondary); width:60px;">Discordo</span>
+                <% (1..5).each do |n| %>
+                  <label style="display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer;">
+                    <input type="radio" name="answers[<%= q[:key] %>]" value="<%= n %>"
+                      <%= saved_answers[q[:key]].to_s == n.to_s ? "checked" : "" %>
+                      style="accent-color:var(--color-accent);">
+                    <span style="font-size:12px; font-weight:500;"><%= n %></span>
+                  </label>
+                <% end %>
+                <span style="font-size:12px; color:var(--color-text-secondary); width:60px; text-align:right;">Concordo</span>
+              </div>
+            <% else %>
+              <textarea name="answers[<%= q[:key] %>]" rows="3" placeholder="Escreva sua resposta..."
+                style="padding:10px 12px; border:1px solid var(--color-border); border-radius:8px; font-size:14px; width:100%; font-family:var(--font-sans); resize:vertical;"><%= saved_answers[q[:key]] %></textarea>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px;">
+        <%= link_to "Cancelar", onboarding_evaluation_path(@evaluation), class: "btn btn-secondary" %>
+        <%= f.submit "Salvar respostas", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   end
 
   resources :cycles, only: [:index, :new, :create, :show, :update, :destroy] do
+    member { get :my_result }
+
     resource :nine_box, only: [:show, :edit, :update], controller: "nine_box"
     resources :questions, only: [:create, :update, :destroy], shallow: true do
       member do
@@ -40,6 +42,19 @@ Rails.application.routes.draw do
       patch :duplicate
     end
   end
+  namespace :onboarding do
+    resources :trails, except: [:destroy] do
+      resources :steps, only: [:create, :update, :destroy], shallow: true do
+        member { patch :reorder }
+      end
+      resources :assignments, only: [:index, :create, :destroy] do
+        member { patch :complete_step }
+      end
+    end
+    resources :evaluations, only: [:index, :show, :edit, :update, :create]
+    resources :feedbacks, only: [:index, :show, :new, :create, :edit, :update]
+  end
+
   resources :people, only: [:index, :show, :edit, :update]
   resources :evaluations, only: [:index, :show, :edit, :update]
   resources :pdis, only: [:index, :new, :create, :show, :edit, :update]
